@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roamify Tables — Convert HTML &amp; Markdown Tables to RoamResearch {{[[table]]}}</title>
+<meta name="description" content="Free online table code converter. Turn HTML tables and Markdown tables into RoamResearch {{[[table]]}} format, and convert them back. Paste, convert, copy. No sign-up, nothing uploaded.">
+<meta name="keywords" content="roamresearch table, html table to roam, markdown table to roam, roam table converter, {{[[table]]}}, table code converter, convert html table to roamresearch, convert markdown table to roamresearch">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#87BCBF">
+<meta name="author" content="Roamify Tables">
+<!-- Favicon & app icons -->
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<link rel="canonical" href="https://roamify.douzong.top/">
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Roamify Tables">
+<meta property="og:title" content="Roamify Tables — HTML &amp; Markdown to RoamResearch Table Converter">
+<meta property="og:description" content="Paste HTML or Markdown table code, get RoamResearch {{[[table]]}} format instantly. Free, private, no sign-up.">
+<meta property="og:url" content="https://roamify.douzong.top/">
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Roamify Tables — Table Code Converter">
+<meta name="twitter:description" content="Convert HTML &amp; Markdown tables to RoamResearch format and back. Free &amp; private.">
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<!-- Icons (FontAwesome) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<!-- Structured data for Google -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Roamify Tables",
+  "alternateName": "Table Converter",
+  "url": "https://roamify.douzong.top/",
+  "applicationCategory": "UtilityApplication",
+  "operatingSystem": "Any (web browser)",
+  "browserRequirements": "Requires JavaScript",
+  "description": "Free online converter that turns HTML table code and Markdown table code into RoamResearch {{[[table]]}} format, and back.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "featureList": [
+    "HTML table to RoamResearch table",
+    "Markdown table to RoamResearch table",
+    "RoamResearch table to HTML table",
+    "RoamResearch table to Markdown table",
+    "One-click paste, copy and clear"
+  ]
+}
+</script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #FDF3F4;
+    --panel: #FFFFFF;
+    --ink: #1B1C20;
+    --teal: #87BCBF;
+    --orange: #D97D54;
+    --navy: #324755;
+    --green: #6EBCA0;
+    --mist: #C8D1D3;
+    --sand: #B9B0A2;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.55;
+    padding: 44px 22px 60px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+  code { font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+  /* ---------- Header ---------- */
+  header { padding: 8px 0 0; }
+  .brand-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .brand-row h1 { font-size: clamp(30px, 5vw, 46px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+  .badge {
+    background: var(--orange); color: #fff;
+    border: 3px solid var(--ink); border-radius: 999px;
+    padding: 5px 16px; font-weight: 700; font-size: 14px;
+    box-shadow: 3px 3px 0 var(--ink); white-space: nowrap;
+  }
+  .tagline { margin-top: 14px; font-size: 18px; color: var(--navy); }
+  .tagline b { color: var(--orange); }
+
+  /* ---------- Tabs ---------- */
+  .tabs { display: flex; gap: 12px; margin-top: 42px; flex-wrap: wrap; }
+  .tab {
+    border: 3px solid var(--ink); border-radius: 16px 16px 0 0;
+    background: #fff; padding: 15px 24px; font-size: 16px; font-weight: 700;
+    cursor: pointer; display: flex; align-items: center; gap: 10px;
+    box-shadow: 4px 4px 0 var(--ink); border-bottom: 0; top: 3px; position: relative;
+    font-family: inherit; transition: transform .06s, box-shadow .06s, background .15s;
+  }
+  .tab:hover:not(.active) { background: var(--mist); }
+  .tab.active { background: var(--teal); top: 0; box-shadow: 6px 6px 0 var(--ink); }
+  .tab i { font-size: 17px; }
+
+  /* ---------- Panel ---------- */
+  .panel {
+    display: none;
+    border: 3px solid var(--ink); border-radius: 0 18px 18px 18px;
+    background: var(--panel); box-shadow: 8px 8px 0 rgba(27, 28, 32, .9);
+    padding: 28px;
+  }
+  .panel.active { display: block; }
+
+  /* Direction bar */
+  .dirbar { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 26px; }
+  .pill {
+    border: 3px solid var(--ink); border-radius: 12px; padding: 11px 20px;
+    font-weight: 700; background: #fff; box-shadow: 3px 3px 0 var(--ink);
+    display: inline-flex; align-items: center; gap: 9px; font-size: 16px;
+  }
+  .pill code { background: var(--mist); padding: 2px 8px; border-radius: 6px; font-size: 12px; }
+
+  /* Buttons */
+  .btn {
+    border: 3px solid var(--ink); border-radius: 12px; background: #fff;
+    font-family: inherit; font-weight: 700; cursor: pointer;
+    padding: 11px 18px; font-size: 15px; display: inline-flex; align-items: center; gap: 9px;
+    box-shadow: 4px 4px 0 var(--ink); color: var(--ink);
+    transition: transform .06s, box-shadow .06s, background .12s;
+  }
+  .btn:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink); }
+  .btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+  .btn-sm { padding: 7px 13px; font-size: 13px; box-shadow: 3px 3px 0 var(--ink); border-radius: 10px; }
+  .btn-primary { background: var(--teal); }
+  .btn-accent { background: var(--orange); color: #fff; }
+  .btn-green { background: var(--green); color: #fff; }
+  .btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+  /* Editors */
+  .editors { display: grid; grid-template-columns: 1fr auto 1fr; gap: 24px; align-items: stretch; }
+  .mid { display: flex; flex-direction: column; gap: 16px; justify-content: center; align-items: center; }
+  .convert { padding: 24px 32px; font-size: 20px; border-radius: 16px; }
+  .editor {
+    border: 3px solid var(--ink); border-radius: 16px; overflow: hidden;
+    box-shadow: 5px 5px 0 rgba(27, 28, 32, .85); background: #fff;
+    display: flex; flex-direction: column; min-width: 0;
+  }
+  .editor-head {
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    padding: 10px 14px; background: var(--mist); border-bottom: 3px solid var(--ink);
+    flex-wrap: wrap;
+  }
+  .editor-head .lbl { font-weight: 700; display: inline-flex; align-items: center; gap: 9px; font-size: 15px; }
+  .editor-head .acts { display: flex; gap: 8px; flex-wrap: wrap; }
+  textarea {
+    width: 100%; min-height: 340px; border: 0; outline: 0; resize: vertical;
+    padding: 18px; font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 13.5px; line-height: 1.6; color: var(--ink); background: #fff;
+  }
+  textarea::placeholder { color: var(--sand); }
+  textarea[readonly] { background: #FDFBFC; }
+
+  /* Status */
+  .status { margin-top: 20px; min-height: 26px; font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 9px; }
+  .status.ok { color: #2E7D5B; }
+  .status.err { color: #B3472E; }
+  .status.warn { color: #8A6D2E; }
+
+  /* ---------- Sections ---------- */
+  .section { margin-top: 64px; }
+  .section h2 {
+    font-size: clamp(22px, 3.4vw, 28px); letter-spacing: -0.01em;
+    display: inline-block; padding-bottom: 8px; position: relative;
+  }
+  .section h2::after { content: ''; position: absolute; left: 0; bottom: 0; height: 6px; width: 100%; background: var(--orange); border-radius: 3px; }
+  .section > p { margin-top: 14px; color: var(--navy); }
+
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 26px; }
+  .step {
+    border: 3px solid var(--ink); border-radius: 14px; background: #fff;
+    box-shadow: 5px 5px 0 var(--ink); padding: 20px;
+  }
+  .step .num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 34px; height: 34px; border: 3px solid var(--ink); border-radius: 10px;
+    background: var(--teal); font-weight: 700; margin-bottom: 12px;
+  }
+  .step h3 { font-size: 17px; margin-bottom: 8px; }
+  .step p { color: var(--navy); font-size: 15px; }
+
+  .roam-sample { margin-top: 26px; background: #fff; border: 3px solid var(--ink); border-radius: 14px; box-shadow: 5px 5px 0 var(--ink); padding: 22px; overflow-x: auto; }
+  .roam-sample pre { font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; line-height: 1.8; }
+
+  .faq { display: grid; gap: 16px; margin-top: 26px; }
+  .faq details {
+    border: 3px solid var(--ink); border-radius: 14px; background: #fff;
+    box-shadow: 4px 4px 0 var(--ink); padding: 18px 20px;
+  }
+  .faq summary { font-weight: 700; font-size: 16px; cursor: pointer; list-style: none; display: flex; align-items: center; gap: 10px; }
+  .faq summary::before { content: '+'; font-weight: 700; color: var(--orange); font-size: 20px; }
+  .faq details[open] summary::before { content: '–'; }
+  .faq details p { margin-top: 10px; color: var(--navy); }
+
+  footer { margin-top: 64px; border-top: 3px solid var(--ink); padding-top: 22px; display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; color: var(--navy); font-size: 14px; }
+  footer b { color: var(--ink); }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 900px) {
+    .editors { grid-template-columns: 1fr; }
+    .mid { flex-direction: row; }
+    .steps { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 560px) {
+    body { padding: 26px 14px 44px; }
+    .panel { padding: 16px; border-radius: 0 14px 14px 14px; }
+    textarea { min-height: 230px; }
+    .tab { width: 100%; justify-content: center; border-radius: 14px; top: 0; border-bottom: 3px solid var(--ink); }
+    .tab.active { box-shadow: 4px 4px 0 var(--ink); }
+    .dirbar { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand-row">
+      <h1>Roamify Tables</h1>
+      <span class="badge">100% Free</span>
+    </div>
+    <p class="tagline">Built for RoamResearch users. Convert <b>HTML tables</b> and <b>Markdown tables</b> into <code>{{[[table]]}}</code> format — and back again. Paste, convert, copy. Nothing leaves your browser.</p>
+  </header>
+
+  <nav class="tabs" aria-label="Converter type">
+    <button class="tab active" data-tab="html" id="tab-html" aria-controls="panel-html">
+      <i class="fa-solid fa-code"></i> HTML <span aria-hidden="true">&harr;</span> RoamResearch
+    </button>
+    <button class="tab" data-tab="md" id="tab-md" aria-controls="panel-md">
+      <i class="fa-solid fa-table"></i> Markdown <span aria-hidden="true">&harr;</span> RoamResearch
+    </button>
+  </nav>
+
+  <main>
+    <!-- ============ HTML <-> Roam ============ -->
+    <section class="panel active" id="panel-html" aria-labelledby="tab-html">
+      <div class="dirbar">
+        <span class="pill" id="html-from"><i class="fa-solid fa-code"></i> HTML</span>
+        <button class="btn" id="swap-html" aria-label="Swap conversion direction">
+          <i class="fa-solid fa-arrow-right-arrow-left"></i> Swap
+        </button>
+        <span class="pill" id="html-to"><i class="fa-solid fa-list-ul"></i> RoamResearch <code>{{[[table]]}}</code></span>
+      </div>
+
+      <div class="editors">
+        <div class="editor">
+          <div class="editor-head">
+            <span class="lbl"><i class="fa-solid fa-right-to-bracket"></i> Input</span>
+            <div class="acts">
+              <button class="btn btn-sm" id="paste-html" aria-label="Paste from clipboard"><i class="fa-solid fa-paste"></i> Paste</button>
+              <button class="btn btn-sm" id="sample-html" aria-label="Load a sample"><i class="fa-solid fa-wand-magic-sparkles"></i> Sample</button>
+              <button class="btn btn-sm" id="clear-html" aria-label="Clear input and output"><i class="fa-solid fa-eraser"></i> Clear</button>
+            </div>
+          </div>
+          <textarea id="in-html" spellcheck="false" aria-label="HTML table input" placeholder="Paste your HTML table code here, e.g. <table>...</table>"></textarea>
+        </div>
+
+        <div class="mid">
+          <button class="btn btn-accent convert" id="convert-html" aria-label="Convert">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Convert
+          </button>
+        </div>
+
+        <div class="editor">
+          <div class="editor-head">
+            <span class="lbl"><i class="fa-solid fa-left-from-bracket"></i> Output</span>
+            <div class="acts">
+              <button class="btn btn-sm btn-green" id="copy-html" aria-label="Copy output"><i class="fa-solid fa-copy"></i> Copy</button>
+            </div>
+          </div>
+          <textarea id="out-html" readonly spellcheck="false" aria-label="Converted output" placeholder="Converted table code will appear here"></textarea>
+        </div>
+      </div>
+
+      <div class="status" id="status-html" aria-live="polite"></div>
+    </section>
+
+    <!-- ============ Markdown <-> Roam ============ -->
+    <section class="panel" id="panel-md" aria-labelledby="tab-md">
+      <div class="dirbar">
+        <span class="pill" id="md-from"><i class="fa-solid fa-table"></i> Markdown</span>
+        <button class="btn" id="swap-md" aria-label="Swap conversion direction">
+          <i class="fa-solid fa-arrow-right-arrow-left"></i> Swap
+        </button>
+        <span class="pill" id="md-to"><i class="fa-solid fa-list-ul"></i> RoamResearch <code>{{[[table]]}}</code></span>
+      </div>
+
+      <div class="editors">
+        <div class="editor">
+          <div class="editor-head">
+            <span class="lbl"><i class="fa-solid fa-right-to-bracket"></i> Input</span>
+            <div class="acts">
+              <button class="btn btn-sm" id="paste-md" aria-label="Paste from clipboard"><i class="fa-solid fa-paste"></i> Paste</button>
+              <button class="btn btn-sm" id="sample-md" aria-label="Load a sample"><i class="fa-solid fa-wand-magic-sparkles"></i> Sample</button>
+              <button class="btn btn-sm" id="clear-md" aria-label="Clear input and output"><i class="fa-solid fa-eraser"></i> Clear</button>
+            </div>
+          </div>
+          <textarea id="in-md" spellcheck="false" aria-label="Markdown table input" placeholder="Paste your Markdown table here, e.g.&#10;| A | B |&#10;|---|---|"></textarea>
+        </div>
+
+        <div class="mid">
+          <button class="btn btn-accent convert" id="convert-md" aria-label="Convert">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Convert
+          </button>
+        </div>
+
+        <div class="editor">
+          <div class="editor-head">
+            <span class="lbl"><i class="fa-solid fa-left-from-bracket"></i> Output</span>
+            <div class="acts">
+              <button class="btn btn-sm btn-green" id="copy-md" aria-label="Copy output"><i class="fa-solid fa-copy"></i> Copy</button>
+            </div>
+          </div>
+          <textarea id="out-md" readonly spellcheck="false" aria-label="Converted output" placeholder="Converted table code will appear here"></textarea>
+        </div>
+      </div>
+
+      <div class="status" id="status-md" aria-live="polite"></div>
+    </section>
+
+    <!-- ============ How it works ============ -->
+    <section class="section" id="how-it-works">
+      <h2>How it works</h2>
+      <p>Roamify Tables converts the <em>code</em> of a table, not a rendered table. Paste the table markup you copied from a website, a document, or your notes, and get the equivalent code in the other format.</p>
+      <div class="steps">
+        <div class="step">
+          <span class="num">1</span>
+          <h3>Paste your table code</h3>
+          <p>Copy any HTML <code>&lt;table&gt;</code> or Markdown table from your source, and paste it into the input box.</p>
+        </div>
+        <div class="step">
+          <span class="num">2</span>
+          <h3>Hit Convert</h3>
+          <p>Click the orange Convert button. Roamify Tables instantly rewrites it into RoamResearch <code>{{[[table]]}}</code> list format — or back to HTML / Markdown if you swapped the direction.</p>
+        </div>
+        <div class="step">
+          <span class="num">3</span>
+          <h3>Copy &amp; use</h3>
+          <p>One click on Copy puts the result on your clipboard. Paste it straight into RoamResearch, your editor, or your notes.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Roam format ============ -->
+    <section class="section" id="roam-format">
+      <h2>What a RoamResearch table looks like</h2>
+      <p>In RoamResearch, a table is an indented bullet list that starts with the <code>{{[[table]]}}</code> tag. The first cell of every row is a top-level bullet; the remaining cells are nested under it. The first row is treated as the header row.</p>
+      <p>When you copy a table out of Roam, the tag can appear with a <code>- </code> bullet, with a number like <code>17. </code>, or missing entirely — Roamify Tables recognizes every one of these forms.</p>
+      <div class="roam-sample">
+        <pre>{{[[table]]}}
+    - Header 1
+        - Header 2
+    - Cell A1
+        - Cell A2
+    - Cell B1
+        - Cell B2</pre>
+      </div>
+    </section>
+
+    <!-- ============ FAQ ============ -->
+    <section class="section" id="faq">
+      <h2>Frequently asked questions</h2>
+      <div class="faq">
+        <details>
+          <summary>What is a RoamResearch table?</summary>
+          <p>RoamResearch stores tables as an indented bullet list beginning with the <code>{{[[table]]}}</code> tag. Each row is a top-level bullet, and each cell after the first is nested beneath it. Roamify Tables generates exactly this structure, so you can paste it straight into your Roam graph.</p>
+        </details>
+        <details>
+          <summary>Why does the Roam code I copy look different each time?</summary>
+          <p>It depends on how you select and copy the table. If you select only the list you get the rows with no tag at all; selecting the whole table in bullet mode gives <code>- {{[[table]]}}</code>; in document mode it gives the bare <code>{{[[table]]}}</code>; and in numbered mode the tag is prefixed with a number like <code>17. {{[[table]]}}</code>. Roamify Tables understands all four forms, so you can paste any of them and convert.</p>
+        </details>
+        <details>
+          <summary>How do I convert an HTML table to a RoamResearch table?</summary>
+          <p>Copy the <code>&lt;table&gt;...&lt;/table&gt;</code> markup, paste it into the input box on the HTML tab, and press Convert. You will get the matching <code>{{[[table]]}}</code> list format. Use the Swap button to go the other way.</p>
+        </details>
+        <details>
+          <summary>How do I convert a Markdown table to a RoamResearch table?</summary>
+          <p>Paste your Markdown table (the pipe-delimited rows) into the Markdown tab and press Convert. The separator row (<code>|---|</code>) is detected and skipped automatically.</p>
+        </details>
+        <details>
+          <summary>What happens to complex HTML tables with merged cells?</summary>
+          <p>Merged cells (rowspan / colspan) are flattened: every cell is listed as its own entry, so the conversion always completes. Complex visual layouts are not preserved, but all of your text content is.</p>
+        </details>
+        <details>
+          <summary>Is Roamify Tables really free?</summary>
+          <p>Yes. Roamify Tables is 100% free, with no sign-up, no account and no usage limits. Every conversion runs locally in your own browser.</p>
+        </details>
+        <details>
+          <summary>Where does my data go?</summary>
+          <p>Nowhere. The conversion happens entirely in your browser tab. Nothing you paste is uploaded, stored or tracked.</p>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span><b>Roamify Tables</b> &copy; 2026 &mdash; free HTML, Markdown &amp; RoamResearch table converter.</span>
+    <span>All conversions run locally in your browser. No data is uploaded.</span>
+  </footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ================= Conversion engine ================= */
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function clean(s) {
+    return String(s).replace(/\s+/g, ' ').trim();
+  }
+
+  /* Recognize any table-tag line, however Roam copied it out:
+     {{[[table]]}}        (document mode)
+     - {{[[table]]}}      (bullet mode)
+     17. {{[[table]]}}    (numbered mode)
+     {{table}}            (legacy variant)
+     A leading number or "- " bullet is stripped before matching. */
+  function isTableTag(s) {
+    var t = String(s).replace(/^\d+\.\s*/, '').replace(/^-\s*/, '');
+    return /^\{\{\[?\[?table\]?\]?\}\}$/.test(t);
+  }
+
+  /**
+   * Parse RoamResearch table list into rows: [[cell, cell, ...], ...]
+   * The row-start indent is detected dynamically from the first data
+   * bullet, so every copy variant works:
+   *   - header tag present ({{[[table]]}} / - / 17.) -> rows at 4 spaces
+   *   - no header tag (list-only copy)               -> rows at 0 spaces
+   * Cells are the bullets indented exactly 4 spaces deeper than a row.
+   */
+  function roamToRows(roam) {
+    var rows = [];
+    var cur = null;
+    var base = null;
+    var lines = String(roam).split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i].replace(/\t/g, '    ').replace(/\s+$/, '');
+      var trimmed = line.trim();
+      if (!trimmed) continue;
+      if (isTableTag(trimmed)) continue;
+      var m = line.match(/^(\s*)- (.*)$/);
+      if (!m) continue;
+      var indent = m[1].length;
+      if (base === null) {
+        base = indent;            /* first data bullet sets the row level */
+        cur = [m[2]];
+        rows.push(cur);
+      } else if (indent === base) {
+        cur = [m[2]];
+        rows.push(cur);
+      } else if (indent === base + 4) {
+        if (cur) cur.push(m[2]);
+      }
+      /* other indent depths are ignored (deep nesting inside a cell) */
+    }
+    return rows;
+  }
+
+  /** HTML table code -> RoamResearch list format */
+  function htmlToRoam(html) {
+    var doc = new DOMParser().parseFromString(String(html), 'text/html');
+    var table = doc.querySelector('table');
+    if (!table) throw new Error('No <table> element found in the input HTML.');
+    var out = ['{{[[table]]}}'];
+    var trs = table.querySelectorAll('tr');
+    for (var i = 0; i < trs.length; i++) {
+      var cells = trs[i].querySelectorAll(':scope > th, :scope > td');
+      for (var j = 0; j < cells.length; j++) {
+        var text = clean(cells[j].textContent);
+        /* first cell = row bullet (4 spaces); all other cells sit at the
+           same deeper level (8 spaces), like Roam's own row layout */
+        out.push((j === 0 ? '    ' : '        ') + '- ' + text);
+      }
+    }
+    return out.join('\n');
+  }
+
+  /** RoamResearch list format -> HTML table code */
+  function roamToHtml(roam) {
+    var rows = roamToRows(roam);
+    if (!rows.length) throw new Error('No table rows found. Expected the {{[[table]]}} list format.');
+    var cols = 0;
+    for (var i = 0; i < rows.length; i++) if (rows[i].length > cols) cols = rows[i].length;
+
+    function renderRow(row, header) {
+      var cells = [];
+      for (var c = 0; c < cols; c++) {
+        var v = row[c] || '';
+        cells.push(header ? '      <th scope="col">' + esc(v) + '</th>'
+                          : '      <td>' + esc(v) + '</td>');
+      }
+      return '    <tr>\n' + cells.join('\n') + '\n    </tr>';
+    }
+
+    var h = '<table>\n  <thead>\n' + renderRow(rows[0], true) + '\n  </thead>';
+    if (rows.length > 1) {
+      var body = [];
+      for (var r = 1; r < rows.length; r++) body.push(renderRow(rows[r], false));
+      h += '\n  <tbody>\n' + body.join('\n') + '\n  </tbody>';
+    }
+    h += '\n</table>';
+    return h;
+  }
+
+  /** Markdown table code -> RoamResearch list format */
+  function mdToRoam(md) {
+    var src = String(md);
+    if (src.indexOf('|') === -1) throw new Error('No Markdown table found. Expected pipe-delimited rows like | A | B |.');
+    var rows = [];
+    var lines = src.split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i].trim();
+      if (!line) continue;
+      if (/^\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$/.test(line)) continue; // separator row
+      var cells = line.replace(/^\|/, '').replace(/\|$/, '').split('|').map(function (s) { return s.trim(); });
+      var hasContent = false;
+      for (var j = 0; j < cells.length; j++) if (cells[j] !== '') hasContent = true;
+      if (hasContent) rows.push(cells);
+    }
+    if (!rows.length) throw new Error('No Markdown table rows found. Expected pipe-delimited rows like | A | B |.');
+    var out = ['{{[[table]]}}'];
+    for (var r = 0; r < rows.length; r++) {
+      for (var c = 0; c < rows[r].length; c++) {
+        out.push((c === 0 ? '    ' : '        ') + '- ' + rows[r][c]);
+      }
+    }
+    return out.join('\n');
+  }
+
+  /** RoamResearch list format -> Markdown table code */
+  function roamToMd(roam) {
+    var rows = roamToRows(roam);
+    if (!rows.length) throw new Error('No table rows found. Expected the {{[[table]]}} list format.');
+    var cols = 0;
+    for (var i = 0; i < rows.length; i++) if (rows[i].length > cols) cols = rows[i].length;
+    var out = [];
+    for (var r = 0; r < rows.length; r++) {
+      var cells = [];
+      for (var c = 0; c < cols; c++) cells.push(rows[r][c] || '');
+      out.push('| ' + cells.join(' | ') + ' |');
+      if (r === 0) out.push('| ' + Array(cols).fill('---').join(' | ') + ' |');
+    }
+    return out.join('\n');
+  }
+
+  /** Count rows x cols of a converted result, for the status line */
+  function countRC(text, format) {
+    try {
+      if (format === 'roam') {
+        var rows = roamToRows(text);
+        if (!rows.length) return '';
+        var maxC = 1;
+        for (var i = 0; i < rows.length; i++) if (rows[i].length > maxC) maxC = rows[i].length;
+        return rows.length + ' rows x ' + maxC + ' columns';
+      }
+      if (format === 'md') {
+        var ls = String(text).split('\n').filter(function (l) { return l.trim(); });
+        if (!ls.length) return '';
+        var cols = ls[0].replace(/^\|/, '').replace(/\|$/, '').split('|').length;
+        var body = ls.filter(function (l) { return !/^\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$/.test(l.trim()); });
+        return body.length + ' rows x ' + cols + ' columns';
+      }
+      if (format === 'html') {
+        var doc = new DOMParser().parseFromString(String(text), 'text/html');
+        var t = doc.querySelector('table');
+        if (!t) return '';
+        var trs = t.querySelectorAll('tr');
+        var first = trs[0] ? trs[0].querySelectorAll('th, td').length : 0;
+        return trs.length + ' rows x ' + first + ' columns';
+      }
+    } catch (e) {}
+    return '';
+  }
+
+  /* ================= Samples ================= */
+
+  var SAMPLES = {
+    html: '<table>\n  <thead>\n    <tr>\n      <th>Fruit</th>\n      <th>Color</th>\n      <th>Price</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>Apple</td>\n      <td>Red</td>\n      <td>$1.20</td>\n    </tr>\n    <tr>\n      <td>Banana</td>\n      <td>Yellow</td>\n      <td>$0.60</td>\n    </tr>\n    <tr>\n      <td>Grape</td>\n      <td>Purple</td>\n      <td>$2.10</td>\n    </tr>\n  </tbody>\n</table>',
+    md: '| Fruit  | Color  | Price |\n| ------ | ------ | ----- |\n| Apple  | Red    | $1.20 |\n| Banana | Yellow | $0.60 |\n| Grape  | Purple | $2.10 |',
+    roam: '{{[[table]]}}\n    - Fruit\n        - Color\n        - Price\n    - Apple\n        - Red\n        - $1.20\n    - Banana\n        - Yellow\n        - $0.60\n    - Grape\n        - Purple\n        - $2.10'
+  };
+
+  var LABELS = { html: 'HTML', md: 'Markdown', roam: 'RoamResearch' };
+  var ICONS = { html: 'fa-code', md: 'fa-table', roam: 'fa-list-ul' };
+
+  var CONVERTERS = {
+    html2roam: htmlToRoam,
+    roam2html: roamToHtml,
+    md2roam: mdToRoam,
+    roam2md: roamToMd
+  };
+
+  /* ================= UI wiring ================= */
+
+  var tabs = ['html', 'md'];
+  var state = { html: { mode: 'html2roam' }, md: { mode: 'md2roam' } };
+
+  function $(id) { return document.getElementById(id); }
+
+  function setPill(el, name) {
+    el.textContent = '';
+    var ic = document.createElement('i');
+    ic.className = 'fa-solid ' + ICONS[name];
+    el.appendChild(ic);
+    el.appendChild(document.createTextNode(' ' + LABELS[name]));
+  }
+
+  function updateDir(tab) {
+    var s = state[tab];
+    var fromName, toName;
+    if (s.mode === 'html2roam') { fromName = 'html'; toName = 'roam'; }
+    else if (s.mode === 'roam2html') { fromName = 'roam'; toName = 'html'; }
+    else if (s.mode === 'md2roam') { fromName = 'md'; toName = 'roam'; }
+    else { fromName = 'roam'; toName = 'md'; }
+    setPill($(tab + '-from'), fromName);
+    setPill($(tab + '-to'), toName);
+  }
+
+  function setStatus(tab, msg, kind) {
+    var st = $(tab === 'html' ? 'status-html' : 'status-md');
+    st.textContent = msg;
+    st.className = 'status' + (kind ? ' ' + kind : '');
+  }
+
+  function doConvert(tab) {
+    var inEl = $(tab === 'html' ? 'in-html' : 'in-md');
+    var outEl = $(tab === 'html' ? 'out-html' : 'out-md');
+    var mode = state[tab].mode;
+    try {
+      var out = CONVERTERS[mode](inEl.value);
+      outEl.value = out;
+      var target = mode.split('2')[1];
+      var rc = countRC(out, target);
+      setStatus(tab, 'Done' + (rc ? ' — ' + rc : ''), 'ok');
+    } catch (e) {
+      outEl.value = '';
+      setStatus(tab, 'Error: ' + e.message, 'err');
+    }
+  }
+
+  function swapTab(tab) {
+    var s = state[tab];
+    var inEl = $(tab === 'html' ? 'in-html' : 'in-md');
+    var outEl = $(tab === 'html' ? 'out-html' : 'out-md');
+    var tmp = inEl.value;
+    inEl.value = outEl.value;
+    outEl.value = tmp;
+    if (s.mode === 'html2roam') s.mode = 'roam2html';
+    else if (s.mode === 'roam2html') s.mode = 'html2roam';
+    else if (s.mode === 'md2roam') s.mode = 'roam2md';
+    else s.mode = 'md2roam';
+    updateDir(tab);
+    setStatus(tab, '', '');
+  }
+
+  function clearTab(tab) {
+    var inEl = $(tab === 'html' ? 'in-html' : 'in-md');
+    var outEl = $(tab === 'html' ? 'out-html' : 'out-md');
+    inEl.value = '';
+    outEl.value = '';
+    setStatus(tab, '', '');
+    inEl.focus();
+  }
+
+  function sampleFor(mode) {
+    if (mode === 'html2roam') return SAMPLES.html;
+    if (mode === 'roam2html') return SAMPLES.roam;
+    if (mode === 'md2roam') return SAMPLES.md;
+    return SAMPLES.roam; /* roam2md */
+  }
+
+  function loadSample(tab) {
+    var inEl = $(tab === 'html' ? 'in-html' : 'in-md');
+    inEl.value = sampleFor(state[tab].mode);
+    setStatus(tab, 'Sample loaded. Press Convert to try it.', '');
+  }
+
+  function pasteInto(tab) {
+    var inEl = $(tab === 'html' ? 'in-html' : 'in-md');
+    if (!navigator.clipboard || !navigator.clipboard.readText) {
+      setStatus(tab, 'Clipboard not available — press Cmd/Ctrl+V to paste manually.', 'warn');
+      return;
+    }
+    navigator.clipboard.readText().then(function (t) {
+      inEl.value = t;
+      setStatus(tab, 'Pasted from clipboard.', 'ok');
+    }).catch(function () {
+      setStatus(tab, 'Clipboard access blocked — press Cmd/Ctrl+V to paste manually.', 'warn');
+    });
+  }
+
+  function copyOut(tab) {
+    var outEl = $(tab === 'html' ? 'out-html' : 'out-md');
+    var v = outEl.value;
+    if (!v) {
+      setStatus(tab, 'Nothing to copy yet — convert something first.', 'warn');
+      return;
+    }
+    if (!navigator.clipboard || !navigator.clipboard.writeText) {
+      outEl.select();
+      document.execCommand('copy');
+      setStatus(tab, 'Copied!', 'ok');
+      return;
+    }
+    navigator.clipboard.writeText(v).then(function () {
+      setStatus(tab, 'Copied to clipboard!', 'ok');
+    }).catch(function () {
+      outEl.select();
+      try { document.execCommand('copy'); setStatus(tab, 'Copied!', 'ok'); }
+      catch (e2) { setStatus(tab, 'Copy blocked — select the text and press Cmd/Ctrl+C.', 'warn'); }
+    });
+  }
+
+  function switchTab(key) {
+    var btns = document.querySelectorAll('.tab');
+    for (var i = 0; i < btns.length; i++) btns[i].classList.toggle('active', btns[i].dataset.tab === key);
+    var panels = document.querySelectorAll('.panel');
+    for (var j = 0; j < panels.length; j++) panels[j].classList.toggle('active', panels[j].id === 'panel-' + key);
+  }
+
+  /* Bind events */
+  for (var t = 0; t < tabs.length; t++) {
+    (function (tab) {
+      $(tab === 'html' ? 'tab-html' : 'tab-md').addEventListener('click', function () { switchTab(tab); });
+      $('convert-' + tab).addEventListener('click', function () { doConvert(tab); });
+      $('swap-' + tab).addEventListener('click', function () { swapTab(tab); });
+      $('clear-' + tab).addEventListener('click', function () { clearTab(tab); });
+      $('sample-' + tab).addEventListener('click', function () { loadSample(tab); });
+      $('paste-' + tab).addEventListener('click', function () { pasteInto(tab); });
+      $('copy-' + tab).addEventListener('click', function () { copyOut(tab); });
+    })(tabs[t]);
+  }
+
+  /* Cmd/Ctrl + Enter to convert from any textarea */
+  document.addEventListener('keydown', function (e) {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      var active = document.activeElement;
+      if (active && active.tagName === 'TEXTAREA') {
+        var tab = active.id.indexOf('in-html') === 0 ? 'html' : (active.id.indexOf('in-md') === 0 ? 'md' : null);
+        if (tab) { e.preventDefault(); doConvert(tab); }
+      }
+    }
+  });
+
+  /* Init pills */
+  updateDir('html');
+  updateDir('md');
+
+  /* Expose engine for tests */
+  window.RoamifyTables = {
+    htmlToRoam: htmlToRoam,
+    roamToHtml: roamToHtml,
+    mdToRoam: mdToRoam,
+    roamToMd: roamToMd,
+    roamToRows: roamToRows
+  };
+})();
+</script>
+</body>
+</html>
