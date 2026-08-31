@@ -3,6 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3C28SP2D8F"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-3C28SP2D8F');
+</script>
 <title>Roamify Tables — Convert HTML &amp; Markdown Tables to RoamResearch {{[[table]]}}</title>
 <meta name="description" content="Free online table code converter. Turn HTML tables and Markdown tables into RoamResearch {{[[table]]}} format, and convert them back. Paste, convert, copy. No sign-up, nothing uploaded.">
 <meta name="keywords" content="roamresearch table, html table to roam, markdown table to roam, roam table converter, {{[[table]]}}, table code converter, convert html table to roamresearch, convert markdown table to roamresearch">
@@ -78,6 +87,9 @@
   }
   .wrap { max-width: 1180px; margin: 0 auto; }
   code { font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace; }
+  /* iOS Safari forces a system blue on <button> text; reset here so our
+     black typography wins on every device. */
+  button { color: inherit; -webkit-appearance: none; background: transparent; font: inherit; }
 
   /* ---------- Header ---------- */
   header { padding: 8px 0 0; }
@@ -97,6 +109,7 @@
   .tab {
     border: 3px solid var(--ink); border-radius: 16px 16px 0 0;
     background: #fff; padding: 15px 24px; font-size: 16px; font-weight: 700;
+    color: var(--ink);
     cursor: pointer; display: flex; align-items: center; gap: 10px;
     box-shadow: 4px 4px 0 var(--ink); border-bottom: 0; top: 3px; position: relative;
     font-family: inherit; transition: transform .06s, box-shadow .06s, background .15s;
@@ -215,7 +228,7 @@
   }
   @media (max-width: 560px) {
     body { padding: 26px 14px 44px; }
-    .panel { padding: 16px; border-radius: 0 14px 14px 14px; }
+    .panel { padding: 16px; border-radius: 0 14px 14px 14px; margin-top: 12px; }
     textarea { min-height: 230px; }
     .tab { width: 100%; justify-content: center; border-radius: 14px; top: 0; border-bottom: 3px solid var(--ink); }
     .tab.active { box-shadow: 4px 4px 0 var(--ink); }
