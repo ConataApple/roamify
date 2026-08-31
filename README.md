@@ -1,18 +1,25 @@
-# Roamify Tables
+# Roamify
 
-Convert HTML & Markdown table code into RoamResearch `{{[[table]]}}` format — and back again.
+Free online tools for RoamResearch users. Convert tables and highlights between RoamResearch, HTML and Markdown — paste, convert, copy. 100% free, runs entirely in your browser, nothing is uploaded.
 
-Built for RoamResearch users. 100% free, runs entirely in your browser — nothing is uploaded.
+## Tools
+
+- **Roamify Tables** (`tables.html`) — HTML & Markdown table code ↔ RoamResearch `{{[[table]]}}` lists. Handles all 4 Roam copy formats.
+- **Roamify Highlights** (`highlights.html`) — Markdown `==highlight==` ↔ RoamResearch `^^highlight^^`. Paste whole notes, keep every word.
+
+The homepage (`index.html`) introduces the site and links to both tools.
+
+## Pages
+
+- `/` — homepage
+- `/tables.html` — Roamify Tables
+- `/highlights.html` — Roamify Highlights
 
 ## Features
 
-- **HTML → RoamResearch** — paste an HTML `<table>`, get Roam `{{[[table]]}}` bullets
-- **Markdown → RoamResearch** — paste a Markdown table, get Roam `{{[[table]]}}` bullets
-- **RoamResearch → HTML** — paste Roam bullets, get an HTML table
-- **RoamResearch → Markdown** — paste Roam bullets, get a Markdown table
-- Handles all 4 Roam copy formats (bullet / document / number / plain list)
 - One-click Paste / Copy / Clear / Sample, plus the Cmd/Ctrl+Enter shortcut
 - Fully client-side — your data never leaves the browser
+- Soft Brutalism design, mobile-friendly, no sign-up
 
 ## Live
 
@@ -20,7 +27,7 @@ https://roamify.douzong.top
 
 ## Version
 
-Current release: **v1.1.0**
+Current release: **v2.0.1**
 
 ## License
 

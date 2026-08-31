@@ -1,23 +1,33 @@
 /**
- * Test suite for the Roamify Tables conversion engine.
- * Extracts the inline <script> from index.html, executes it in Node
- * with a jsdom-provided DOMParser, then asserts round-trip behavior.
+ * Test suite for the Roamify site (3 pages).
+ * Loads each real HTML page with jsdom (runScripts: 'dangerously'),
+ * then asserts on the exposed engines and the DOM:
+ *   - tables.html   -> window.RoamifyTables  (table converters)
+ *   - highlights.html -> window.RoamifyHighlights (highlight converters)
+ *   - index.html    -> homepage structure, nav, SEO
  */
 const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
 
-// Load the real page with jsdom so the full DOM exists and inline JS runs
-const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
-const dom = new JSDOM(html, { url: 'https://localhost/', runScripts: 'dangerously', pretendToBeVisual: true });
-const T = dom.window.RoamifyTables;
-if (!T) { console.error('FAIL: window.RoamifyTables was not exposed'); process.exit(1); }
+function loadPage(file) {
+  const html = fs.readFileSync(path.join(__dirname, file), 'utf8');
+  return new JSDOM(html, { url: 'https://localhost/', runScripts: 'dangerously', pretendToBeVisual: true });
+}
 
 let pass = 0, fail = 0;
 function assert(cond, name, detail) {
   if (cond) { pass++; console.log('  ok  ' + name); }
   else { fail++; console.error('FAIL  ' + name + (detail ? '\n      ' + detail : '')); }
 }
+
+/* ================================================================
+ * 1) tables.html — RoamifyTables engine (same suite as v1.1.0)
+ * ================================================================ */
+console.log('\n=== tables.html: RoamifyTables engine ===');
+const domTables = loadPage('tables.html');
+const T = domTables.window.RoamifyTables;
+if (!T) { console.error('FAIL: window.RoamifyTables was not exposed'); process.exit(1); }
 
 const htmlSample = `  <table>
     <thead><tr><th>Fruit</th><th>Color</th><th>Price</th></tr></thead>
@@ -50,7 +60,7 @@ assert(h2r.startsWith('{{[[table]]}}'), 'starts with {{[[table]]}}', h2r.split('
 assert(h2r.includes('    - Fruit'), 'header row present (level 1)');
 assert(h2r.includes('        - Color'), 'second cell nested (level 2)');
 assert(h2r.includes('        - $2.10'), 'last cell present');
-assert((h2r.match(/- /g) || []).length === 12, '12 cells total (3 rows x 3 cols + 1 header = 4 rows x 3 cols)', h2r);
+assert((h2r.match(/- /g) || []).length === 12, '12 cells total (4 rows x 3 cols)', h2r);
 
 console.log('\n--- Roam -> HTML ---');
 const r2h = T.roamToHtml(roamSample);
@@ -89,21 +99,16 @@ console.log('\n--- Edge cases (4 Roam copy variants) ---');
 assert(T.roamToRows(roamSample).length === 4, 'roamToRows parses 4 rows');
 assert(T.roamToRows(roamSample)[0].length === 3, 'first row has 3 cells');
 
-// Variant 1: list-only copy, no tag, flush-left rows
 const v1 = '- 行1列1\n    - 行1列2\n- 行2列1\n    - 行2列2\n- 行3列1\n    - 行3列2';
 assert(T.roamToRows(v1).length === 3, 'variant 1 (no tag, flush) parses 3 rows', JSON.stringify(T.roamToRows(v1)));
 assert(T.roamToRows(v1)[0].length === 2, 'variant 1 rows have 2 cells');
 assert(T.roamToHtml(v1).includes('<th scope="col">行1列1</th>'), 'variant 1 -> HTML works');
 assert(T.roamToMd(v1).includes('| 行1列2 |'), 'variant 1 -> Markdown works');
 
-// Variant 2: bullet mode, "- {{[[table]]}}"
 const v2 = '- {{[[table]]}}\n    - a\n        - b\n    - c\n        - d';
 assert(T.roamToRows(v2).length === 2, 'variant 2 (- {{[[table]]}}) parses 2 rows', JSON.stringify(T.roamToRows(v2)));
 assert(T.roamToRows(v2)[0].length === 2, 'variant 2 rows have 2 cells');
 
-// Variant 3: document mode, bare tag (covered by roamSample above)
-
-// Variant 4: numbered mode, "17. {{[[table]]}}"
 const v4 = '17. {{[[table]]}}\n    - a\n        - b\n    - c\n        - d';
 assert(T.roamToRows(v4).length === 2, 'variant 4 (numbered tag) parses 2 rows', JSON.stringify(T.roamToRows(v4)));
 assert(T.roamToRows(v4)[0].length === 2, 'variant 4 rows have 2 cells');
@@ -122,16 +127,15 @@ let threw3 = false;
 try { T.mdToRoam('not a markdown table'); } catch (e) { threw3 = true; }
 assert(threw3, 'mdToRoam throws on non-table input');
 
-// colspan/rowspan get flattened (no crash, all content kept)
 const merged = '<table><tr><td colspan="2">A</td><td>B</td></tr><tr><td rowspan="2">C</td><td>D</td><td>E</td></tr><tr><td>F</td><td>G</td></tr></table>';
 const mergedRoam = T.htmlToRoam(merged);
 assert(mergedRoam.split('\n').length === 8, 'merged cells flattened into 7 entries (1 + 7 lines)', mergedRoam);
 const mergedBack = T.roamToHtml(mergedRoam);
 assert(mergedBack.includes('<th scope="col">A</th>') && mergedBack.includes('<td>G</td>'), 'merged table round-trips all content');
 
-console.log('\n--- UI smoke tests (simulated clicks) ---');
+console.log('\n--- tables.html UI smoke tests (simulated clicks) ---');
 {
-  const w = dom.window;
+  const w = domTables.window;
   const $ = (id) => w.document.getElementById(id);
 
   $('sample-html').click();
@@ -163,6 +167,115 @@ console.log('\n--- UI smoke tests (simulated clicks) ---');
   $('convert-html').click();
   assert($('status-html').textContent.indexOf('Error') !== -1, 'Empty convert shows error hint', $('status-html').textContent);
 }
+
+/* ================================================================
+ * 2) highlights.html — RoamifyHighlights engine
+ * ================================================================ */
+console.log('\n=== highlights.html: RoamifyHighlights engine ===');
+const domHl = loadPage('highlights.html');
+const H = domHl.window.RoamifyHighlights;
+if (!H) { console.error('FAIL: window.RoamifyHighlights was not exposed'); process.exit(1); }
+
+console.log('\n--- Markdown -> Roam ---');
+assert(H.mdToRoamHighlight('This is a ==highlighted== word.') === 'This is a ^^highlighted^^ word.', 'single marker converts ==x== -> ^^x^^');
+const mdNote = 'Meeting ==notes== for ==today==: buy milk, finish the report.';
+const md2r = H.mdToRoamHighlight(mdNote);
+assert(md2r === 'Meeting ^^notes^^ for ^^today^^: buy milk, finish the report.', 'multiple markers all convert, context kept', md2r);
+assert(!md2r.includes('=='), 'no == markers remain after md->roam', md2r);
+
+console.log('\n--- Roam -> Markdown ---');
+assert(H.roamToMdHighlight('This is a ^^highlighted^^ word.') === 'This is a ==highlighted== word.', 'single marker converts ^^x^^ -> ==x==');
+const roamNote = 'Roam ^^bullets^^ keep the rest of the ^^sentence^^ intact.';
+const r2m2 = H.roamToMdHighlight(roamNote);
+assert(r2m2 === 'Roam ==bullets== keep the rest of the ==sentence== intact.', 'multiple markers all convert, context kept', r2m2);
+assert(!r2m2.includes('^^'), 'no ^^ markers remain after roam->md', r2m2);
+
+console.log('\n--- Edge cases ---');
+assert(H.mdToRoamHighlight('plain text with no markers') === 'plain text with no markers', 'no markers -> unchanged');
+assert(H.roamToMdHighlight('plain text with no markers') === 'plain text with no markers', 'no markers (roam) -> unchanged');
+assert(H.mdToRoamHighlight('a == lone opener stays') === 'a == lone opener stays', 'unpaired == left as-is');
+assert(H.roamToMdHighlight('a ^^ lone opener stays') === 'a ^^ lone opener stays', 'unpaired ^^ left as-is');
+assert(H.mdToRoamHighlight('') === '', 'empty string -> empty');
+assert(H.roamToMdHighlight('') === '', 'empty string (roam) -> empty');
+assert(H.mdToRoamHighlight('multiline\n==a==\n==b==') === 'multiline\n^^a^^\n^^b^^', 'multiline text handled');
+
+console.log('\n--- Round trips ---');
+const hlRt1 = H.mdToRoamHighlight(H.roamToMdHighlight('^^one^^ and ^^two^^'));
+assert(hlRt1 === '^^one^^ and ^^two^^', 'roam -> md -> roam round trip stable', hlRt1);
+const hlRt2 = H.roamToMdHighlight(H.mdToRoamHighlight('==one== and ==two=='));
+assert(hlRt2 === '==one== and ==two==', 'md -> roam -> md round trip stable', hlRt2);
+
+console.log('\n--- highlights.html UI smoke tests ---');
+{
+  const w = domHl.window;
+  const $ = (id) => w.document.getElementById(id);
+
+  $('sample-hl').click();
+  assert($('in-hl').value.includes('=='), 'Sample fills input with Markdown markers');
+  $('convert-hl').click();
+  assert($('out-hl').value.includes('^^'), 'Convert produces Roam markers', $('out-hl').value);
+  assert($('status-hl').textContent.indexOf('highlights converted') !== -1, 'status reports converted count', $('status-hl').textContent);
+
+  $('swap-hl').click();
+  assert($('hl-from').textContent.indexOf('RoamResearch') !== -1, 'Swap flips direction label');
+  $('convert-hl').click();
+  assert($('out-hl').value.includes('=='), 'Reverse convert produces Markdown markers');
+
+  $('clear-hl').click();
+  assert($('in-hl').value === '' && $('out-hl').value === '', 'Clear empties both boxes');
+
+  $('convert-hl').click();
+  assert($('status-hl').textContent.indexOf('no highlights') !== -1, 'Empty convert shows friendly hint', $('status-hl').textContent);
+}
+
+/* ================================================================
+ * 3) index.html — homepage structure, nav, SEO
+ * ================================================================ */
+console.log('\n=== index.html: homepage ===');
+const domHome = loadPage('index.html');
+const homeW = domHome.window;
+const h$ = (id) => homeW.document.getElementById(id);
+
+console.log('\n--- SEO ---');
+assert(domHome.window.document.title.indexOf('Roamify') !== -1, 'title mentions Roamify', domHome.window.document.title);
+assert(domHome.window.document.querySelector('meta[name="description"]').content.length > 40, 'meta description present');
+assert(domHome.window.document.querySelector('link[rel="canonical"]').getAttribute('href') === 'https://roamify.douzong.top/', 'canonical points to homepage', domHome.window.document.querySelector('link[rel="canonical"]').getAttribute('href'));
+assert(domHome.window.document.querySelector('script[type="application/ld+json"]'), 'JSON-LD structured data present');
+assert(domHome.window.document.documentElement.innerHTML.indexOf('G-3C28SP2D8F') !== -1, 'GA tag present on homepage');
+
+console.log('\n--- Navigation ---');
+const homeNav = homeW.document.querySelectorAll('.nav-links a');
+assert(homeNav.length === 3, 'nav has 3 links', String(homeNav.length));
+assert(homeW.document.querySelector('.nav-links a.active') !== null, 'Home link marked active');
+
+console.log('\n--- Tool cards ---');
+const cards = homeW.document.querySelectorAll('.tool-card');
+assert(cards.length === 2, 'two tool cards', String(cards.length));
+assert(cards[0].getAttribute('href') === 'tables.html', 'first card links to tables.html', cards[0].getAttribute('href'));
+assert(cards[1].getAttribute('href') === 'highlights.html', 'second card links to highlights.html', cards[1].getAttribute('href'));
+assert(cards[0].textContent.indexOf('Tables') !== -1, 'first card mentions Tables');
+assert(cards[1].textContent.indexOf('Highlights') !== -1, 'second card mentions Highlights');
+assert(homeW.document.querySelector('#about h2') !== null, 'What is Roamify section present');
+assert(homeW.document.querySelectorAll('#faq details').length >= 3, 'FAQ has 3+ questions');
+
+/* ================================================================
+ * 4) Cross-page navigation
+ * ================================================================ */
+console.log('\n=== cross-page links ===');
+const linksOf = (file) => {
+  const dom = loadPage(file);
+  return Array.from(dom.window.document.querySelectorAll('a')).map(a => a.getAttribute('href'));
+};
+const tLinks = linksOf('tables.html');
+const hLinks = linksOf('highlights.html');
+const iLinks = linksOf('index.html');
+assert(tLinks.indexOf('highlights.html') !== -1, 'tables.html links to highlights.html');
+assert(tLinks.indexOf('index.html') !== -1, 'tables.html links to homepage');
+assert(hLinks.indexOf('tables.html') !== -1, 'highlights.html links to tables.html');
+assert(hLinks.indexOf('index.html') !== -1, 'highlights.html links to homepage');
+assert(iLinks.indexOf('tables.html') !== -1, 'homepage links to tables.html');
+assert(iLinks.indexOf('highlights.html') !== -1, 'homepage links to highlights.html');
+assert(tLinks.indexOf('index.html') !== -1 && tLinks.indexOf('highlights.html') !== -1, 'tables.html nav brand + Home present');
 
 console.log('\n====================================');
 console.log('RESULT: ' + pass + ' passed, ' + fail + ' failed');
