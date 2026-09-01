@@ -27,7 +27,7 @@ https://roamify.douzong.top
 
 ## Version
 
-Current release: **v2.0.1**
+Current release: **v2.0.2**
 
 ## License
 

@@ -400,6 +400,20 @@ RoamResearch: This is a ^^highlighted^^ word.</pre>
   var LABELS = { md: 'Markdown', roam: 'RoamResearch' };
   var ICONS = { md: 'fa-table', roam: 'fa-highlighter' };
 
+  /* Placeholder text for the input/output boxes, per conversion direction.
+     Updated by updateDir() so the hint always matches what the user should
+     paste / what will appear after a Swap. */
+  var PLACEHOLDERS = {
+    md2roam: {
+      in: 'Paste your note here, e.g.\nThis is a ==highlighted== word.',
+      out: 'Converted RoamResearch ^^highlight^^ text will appear here'
+    },
+    roam2md: {
+      in: 'Paste your RoamResearch code here.',
+      out: 'Converted Markdown ==highlight== text will appear here'
+    }
+  };
+
   var CONVERTERS = {
     md2roam: mdToRoamHighlight,
     roam2md: roamToMdHighlight
@@ -424,6 +438,9 @@ RoamResearch: This is a ^^highlighted^^ word.</pre>
     var toName = state.mode === 'md2roam' ? 'roam' : 'md';
     setPill($('hl-from'), fromName);
     setPill($('hl-to'), toName);
+    var ph = PLACEHOLDERS[state.mode];
+    $('in-hl').placeholder = ph.in;
+    $('out-hl').placeholder = ph.out;
   }
 
   function setStatus(msg, kind) {

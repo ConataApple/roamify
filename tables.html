@@ -644,6 +644,28 @@
   var LABELS = { html: 'HTML', md: 'Markdown', roam: 'RoamResearch' };
   var ICONS = { html: 'fa-code', md: 'fa-table', roam: 'fa-list-ul' };
 
+  /* Placeholder text for the input/output boxes, per conversion direction.
+     Updated by updateDir() so the hint always matches what the user should
+     paste / what will appear after a Swap. */
+  var PLACEHOLDERS = {
+    html2roam: {
+      in: 'Paste your HTML table code here, e.g. <table>...</table>',
+      out: 'Converted RoamResearch {{[[table]]}} code will appear here'
+    },
+    roam2html: {
+      in: 'Paste your RoamResearch code here.',
+      out: 'Converted HTML table code will appear here'
+    },
+    md2roam: {
+      in: 'Paste your Markdown table here, e.g.\n| A | B |\n|---|---|',
+      out: 'Converted RoamResearch {{[[table]]}} code will appear here'
+    },
+    roam2md: {
+      in: 'Paste your RoamResearch code here.',
+      out: 'Converted Markdown table will appear here'
+    }
+  };
+
   var CONVERTERS = {
     html2roam: htmlToRoam,
     roam2html: roamToHtml,
@@ -675,6 +697,9 @@
     else { fromName = 'roam'; toName = 'md'; }
     setPill($(tab + '-from'), fromName);
     setPill($(tab + '-to'), toName);
+    var ph = PLACEHOLDERS[s.mode];
+    $(tab === 'html' ? 'in-html' : 'in-md').placeholder = ph.in;
+    $(tab === 'html' ? 'out-html' : 'out-md').placeholder = ph.out;
   }
 
   function setStatus(tab, msg, kind) {
