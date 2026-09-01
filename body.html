@@ -12,29 +12,29 @@
 
   gtag('config', 'G-3C28SP2D8F');
 </script>
-<title>Roamify Highlights — Convert Markdown Highlights to RoamResearch ^^Highlight^^</title>
-<meta name="description" content="Free online highlight code converter. Turn Markdown ==highlight== markers into RoamResearch ^^highlight^^ format, and back. Paste, convert, copy. No sign-up, nothing uploaded.">
-<meta name="keywords" content="roamresearch highlight, markdown highlight to roam, roam highlight converter, roamresearch ^^highlight^^, markdown ==highlight==, highlight code converter, convert markdown highlight to roamresearch, convert roamresearch highlight to markdown">
+<title>Roamify Body — Strip Blockquotes &amp; Keep Only Your Note Text</title>
+<meta name="description" content="Free online note cleaner for RoamResearch users. Paste a note copied in Bullet, Document or Number mode and remove every indented > blockquote — keep only the body text. Paste, convert, copy. No sign-up, nothing uploaded.">
+<meta name="keywords" content="roamresearch clean text, remove blockquote from roam, roamresearch strip quotes, keep only body text roam, roam blockquote remover, roamresearch citation remover, remove references roam, roamify body, roam note cleaner">
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#87BCBF">
-<meta name="author" content="Roamify Highlights">
+<meta name="author" content="Roamify Body">
 <!-- Favicon & app icons -->
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 <link rel="shortcut icon" href="favicon.ico">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="manifest" href="site.webmanifest">
-<link rel="canonical" href="https://roamify.douzong.top/highlights.html">
+<link rel="canonical" href="https://roamify.douzong.top/body.html">
 <!-- Open Graph -->
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Roamify Highlights">
-<meta property="og:title" content="Roamify Highlights — Markdown to RoamResearch Highlight Converter">
-<meta property="og:description" content="Paste text with Markdown ==highlight== markers, get RoamResearch ^^highlight^^ format instantly. Free, private, no sign-up.">
-<meta property="og:url" content="https://roamify.douzong.top/highlights.html">
+<meta property="og:site_name" content="Roamify Body">
+<meta property="og:title" content="Roamify Body — RoamResearch Blockquote Remover">
+<meta property="og:description" content="Paste a note copied from RoamResearch and strip every indented > blockquote, keeping only the body text. Free, private, no sign-up.">
+<meta property="og:url" content="https://roamify.douzong.top/body.html">
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Roamify Highlights — Highlight Code Converter">
-<meta name="twitter:description" content="Convert Markdown ==highlight== markers to RoamResearch ^^highlight^^ format and back. Free &amp; private.">
+<meta name="twitter:title" content="Roamify Body — Blockquote Remover for RoamResearch">
+<meta name="twitter:description" content="Remove indented > blockquotes from RoamResearch notes and keep only the body text. Free &amp; private.">
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,17 +46,18 @@
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  "name": "Roamify Highlights",
-  "alternateName": "Highlight Converter",
-  "url": "https://roamify.douzong.top/highlights.html",
+  "name": "Roamify Body",
+  "alternateName": "RoamResearch Blockquote Remover",
+  "url": "https://roamify.douzong.top/body.html",
   "applicationCategory": "UtilityApplication",
   "operatingSystem": "Any (web browser)",
   "browserRequirements": "Requires JavaScript",
-  "description": "Free online converter that turns Markdown ==highlight== markers into RoamResearch ^^highlight^^ format, and back.",
+  "description": "Free online tool that removes indented > blockquotes (supporting citations) from RoamResearch notes copied in Bullet, Document or Number mode, keeping only the body text.",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
   "featureList": [
-    "Markdown highlight to RoamResearch highlight",
-    "RoamResearch highlight to Markdown highlight",
+    "Remove indented > blockquotes from RoamResearch notes",
+    "Supports Bullet, Document and Number copy modes",
+    "Keeps bullet points and numbers unchanged",
     "One-click paste, copy and clear"
   ]
 }
@@ -85,6 +86,8 @@
   }
   .wrap { max-width: 1180px; margin: 0 auto; }
   code { font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace; }
+  /* iOS Safari forces a system blue on <button> text; reset here so our
+     black typography wins on every device. */
   button { color: inherit; -webkit-appearance: none; background: transparent; font: inherit; }
 
   /* ---------- Site nav ---------- */
@@ -137,6 +140,17 @@
     display: inline-flex; align-items: center; gap: 9px; font-size: 16px;
   }
   .pill code { background: var(--mist); padding: 2px 8px; border-radius: 6px; font-size: 12px; }
+
+  /* Direction arrow */
+  .dir-arrow { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; color: var(--ink); font-size: 17px; }
+
+  /* Output options */
+  .opts { display: flex; justify-content: center; margin-bottom: 26px; }
+  .opt {
+    display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+    font-weight: 700; font-size: 14px; color: var(--navy);
+  }
+  .opt input { width: 17px; height: 17px; accent-color: var(--teal); cursor: pointer; margin: 0; }
 
   /* Buttons */
   .btn {
@@ -208,6 +222,7 @@
 
   .roam-sample { margin-top: 26px; background: #fff; border: 3px solid var(--ink); border-radius: 14px; box-shadow: 5px 5px 0 var(--ink); padding: 22px; overflow-x: auto; }
   .roam-sample pre { font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; line-height: 1.8; }
+  .roam-sample .note { color: var(--navy); font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 14px; margin-bottom: 10px; }
 
   .faq { display: grid; gap: 16px; margin-top: 26px; }
   .faq details {
@@ -245,27 +260,32 @@
     <div class="nav-links">
       <a href="index.html"><i class="fa-solid fa-house"></i> Home</a>
       <a href="tables.html"><i class="fa-solid fa-table"></i> Tables</a>
-      <a href="highlights.html" class="active" aria-current="page"><i class="fa-solid fa-highlighter"></i> Highlights</a>
-      <a href="body.html"><i class="fa-solid fa-scissors"></i> Body</a>
+      <a href="highlights.html"><i class="fa-solid fa-highlighter"></i> Highlights</a>
+      <a href="body.html" class="active" aria-current="page"><i class="fa-solid fa-scissors"></i> Body</a>
     </div>
   </nav>
 
   <header>
     <div class="brand-row">
-      <h1>Roamify Highlights</h1>
+      <h1>Roamify Body</h1>
       <span class="badge">100% Free</span>
     </div>
-    <p class="tagline">Built for RoamResearch users. Convert <b>Markdown highlights</b> (<code>==text==</code>) into <b>RoamResearch highlights</b> (<code>^^text^^</code>) — and back again. Paste, convert, copy. Nothing leaves your browser.</p>
+    <p class="tagline">Built for RoamResearch users. Remove the indented <b>&gt; blockquotes</b> under your paragraphs — the citations you use as evidence — and keep only the <b>body text</b>. Paste, convert, copy. Nothing leaves your browser.</p>
   </header>
 
   <main>
-    <section class="panel" id="panel-hl">
+    <section class="panel" id="panel-body">
       <div class="dirbar">
-        <span class="pill" id="hl-from"><i class="fa-solid fa-table"></i> Markdown</span>
-        <button class="btn" id="swap-hl" aria-label="Swap conversion direction">
-          <i class="fa-solid fa-arrow-right-arrow-left"></i> Swap
-        </button>
-        <span class="pill" id="hl-to"><i class="fa-solid fa-highlighter"></i> RoamResearch <code>^^text^^</code></span>
+        <span class="pill"><i class="fa-solid fa-route"></i> RoamResearch <code>&gt; quotes</code></span>
+        <span class="dir-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
+        <span class="pill"><i class="fa-solid fa-paragraph"></i> Body text</span>
+      </div>
+
+      <div class="opts">
+        <label class="opt" for="keep-markers-body" title="When checked, bullets (- ) and numbers (6. ) in your body text are kept. Uncheck to strip the top-level markers only.">
+          <input type="checkbox" id="keep-markers-body" checked>
+          Keep bullets &amp; numbers
+        </label>
       </div>
 
       <div class="editors">
@@ -273,16 +293,16 @@
           <div class="editor-head">
             <span class="lbl"><i class="fa-solid fa-right-to-bracket"></i> Input</span>
             <div class="acts">
-              <button class="btn btn-sm" id="paste-hl" aria-label="Paste from clipboard"><i class="fa-solid fa-paste"></i> Paste</button>
-              <button class="btn btn-sm" id="sample-hl" aria-label="Load a sample"><i class="fa-solid fa-wand-magic-sparkles"></i> Sample</button>
-              <button class="btn btn-sm" id="clear-hl" aria-label="Clear input and output"><i class="fa-solid fa-eraser"></i> Clear</button>
+              <button class="btn btn-sm" id="paste-body" aria-label="Paste from clipboard"><i class="fa-solid fa-paste"></i> Paste</button>
+              <button class="btn btn-sm" id="sample-body" aria-label="Load a sample"><i class="fa-solid fa-wand-magic-sparkles"></i> Sample</button>
+              <button class="btn btn-sm" id="clear-body" aria-label="Clear input and output"><i class="fa-solid fa-eraser"></i> Clear</button>
             </div>
           </div>
-          <textarea id="in-hl" spellcheck="false" aria-label="Highlight text input" placeholder="Paste your note here, e.g.&#10;This is a ==highlighted== word."></textarea>
+          <textarea id="in-body" spellcheck="false" aria-label="RoamResearch note input" placeholder="Paste your note here, e.g.&#10;- Body paragraph 1&#10;    - &gt; Supporting citation for paragraph 1&#10;- Body paragraph 2"></textarea>
         </div>
 
         <div class="mid">
-          <button class="btn btn-accent convert" id="convert-hl" aria-label="Convert">
+          <button class="btn btn-accent convert" id="convert-body" aria-label="Convert">
             <i class="fa-solid fa-wand-magic-sparkles"></i> Convert
           </button>
         </div>
@@ -291,46 +311,68 @@
           <div class="editor-head">
             <span class="lbl"><i class="fa-solid fa-left-from-bracket"></i> Output</span>
             <div class="acts">
-              <button class="btn btn-sm btn-green" id="copy-hl" aria-label="Copy output"><i class="fa-solid fa-copy"></i> Copy</button>
+              <button class="btn btn-sm btn-green" id="copy-body" aria-label="Copy output"><i class="fa-solid fa-copy"></i> Copy</button>
             </div>
           </div>
-          <textarea id="out-hl" readonly spellcheck="false" aria-label="Converted output" placeholder="Converted text will appear here"></textarea>
+          <textarea id="out-body" readonly spellcheck="false" aria-label="Cleaned output" placeholder="Your body text, without the &gt; blockquotes, will appear here"></textarea>
         </div>
       </div>
 
-      <div class="status" id="status-hl" aria-live="polite"></div>
+      <div class="status" id="status-body" aria-live="polite"></div>
     </section>
 
     <!-- ============ How it works ============ -->
     <section class="section" id="how-it-works">
       <h2>How it works</h2>
-      <p>Roamify Highlights swaps the <em>highlight markers</em> in your text, not the words. Paste a whole note that contains <code>==highlight==</code> or <code>^^highlight^^</code> markers — every marker is converted while the rest of your text stays exactly the same.</p>
+      <p>Roamify Body finds every <em>indented blockquote</em> in your note and removes it, while leaving the body text exactly as it is. A blockquote is any line that starts with <code>&gt;</code> — often written under a paragraph as <code>- &gt; your citation</code> — including multi-line quotes whose continuation lines also begin with <code>&gt;</code>.</p>
       <div class="steps">
         <div class="step">
           <span class="num">1</span>
           <h3>Paste your note</h3>
-          <p>Copy a paragraph, note or article with Markdown <code>==highlights==</code> or RoamResearch <code>^^highlights^^</code>, and paste it into the input box.</p>
+          <p>Copy a paragraph, note or page out of RoamResearch in Bullet, Document or Number mode, and paste it into the input box.</p>
         </div>
         <div class="step">
           <span class="num">2</span>
-          <h3>Hit Convert</h3>
-          <p>Click the orange Convert button. Every highlight marker is rewritten into the other format, and the rest of your text is left untouched.</p>
+          <h3>Strip the quotes</h3>
+          <p>Click the orange Convert button. Every indented <code>&gt;</code> blockquote is removed. Keep <em>Keep bullets &amp; numbers</em> checked to preserve all list markers, or uncheck it to strip only the top-level ones.</p>
         </div>
         <div class="step">
           <span class="num">3</span>
           <h3>Copy &amp; use</h3>
-          <p>One click on Copy puts the result on your clipboard. Paste it straight into RoamResearch, Obsidian, Typora or any Markdown editor.</p>
+          <p>One click on Copy puts the cleaned body text on your clipboard. Paste it anywhere — email, doc, chat — without the supporting citations.</p>
         </div>
       </div>
     </section>
 
-    <!-- ============ Highlight format ============ -->
-    <section class="section" id="hl-format">
-      <h2>Markers at a glance</h2>
-      <p>Markdown highlights use double equals signs <code>==text==</code>, while RoamResearch uses double carets <code>^^text^^</code>. Everything else in your text is identical in both formats.</p>
+    <!-- ============ All three copy modes ============ -->
+    <section class="section" id="modes">
+      <h2>Every copy mode, one button</h2>
+      <p>RoamResearch can copy the same note differently depending on how you select it. Roamify Body understands all three forms and always keeps only the body text.</p>
+
       <div class="roam-sample">
-        <pre>Markdown:     This is a ==highlighted== word.
-RoamResearch: This is a ^^highlighted^^ word.</pre>
+        <div class="note">Bullet mode</div>
+        <pre>- Body paragraph 1
+    - &gt; Supporting citation for paragraph 1
+- Body paragraph 2
+    - &gt; Single-line citation
+    - &gt; Multi-line citation: first line
+      &gt; Multi-line citation: second line</pre>
+      </div>
+
+      <div class="roam-sample">
+        <div class="note">Document mode</div>
+        <pre>Body paragraph 1
+    - &gt; Supporting citation for paragraph 1
+Body paragraph 2
+    - &gt; #Phase 1 Target customers, requirements</pre>
+      </div>
+
+      <div class="roam-sample">
+        <div class="note">Numbered mode</div>
+        <pre>6. Body paragraph 1
+    - &gt; Supporting citation for paragraph 1
+7. Body paragraph 2
+    - &gt; Single-line citation</pre>
       </div>
     </section>
 
@@ -339,31 +381,39 @@ RoamResearch: This is a ^^highlighted^^ word.</pre>
       <h2>Frequently asked questions</h2>
       <div class="faq">
         <details>
-          <summary>What is a RoamResearch highlight?</summary>
-          <p>In RoamResearch, highlighted text is wrapped in double carets: <code>^^like this^^</code>. Roamify Highlights converts that marker into the Markdown form <code>==like this==</code>, and back.</p>
+          <summary>What does Roamify Body remove?</summary>
+          <p>Any line that starts with <code>&gt;</code> — the indented blockquotes RoamResearch users add under a paragraph as supporting citations — including their multi-line continuations. Everything else is kept.</p>
         </details>
         <details>
-          <summary>What is a Markdown highlight?</summary>
-          <p>Many Markdown editors (Obsidian, Typora, GitHub Flavored Markdown and more) support highlights written as <code>==text==</code>. Roamify Highlights converts them to RoamResearch's <code>^^text^^</code> form.</p>
+          <summary>Which RoamResearch copy modes are supported?</summary>
+          <p>All three. Bullet mode (<code>- text</code>), Document mode (plain text) and Numbered mode (<code>6. text</code>) are all detected automatically — you don't need to tell Roamify Body which one you used.</p>
         </details>
         <details>
-          <summary>Do I need to remove the surrounding text?</summary>
-          <p>No. Paste a whole paragraph or note. Roamify Highlights keeps every word and only swaps the highlight markers. Unpaired markers such as a lone <code>==</code> are left exactly as they are.</p>
+          <summary>Will my bullets or numbers be changed?</summary>
+          <p>Only the <code>&gt;</code> blockquotes are removed. By default, bullet points and numbers stay exactly as they were. If you uncheck <em>Keep bullets &amp; numbers</em>, only the top-level markers are stripped — nested child bullets keep their indentation and <code>-</code> markers, so the structure of your note is preserved.</p>
         </details>
         <details>
-          <summary>Is Roamify Highlights really free?</summary>
-          <p>Yes. Roamify Highlights is 100% free, with no sign-up, no account and no usage limits. Every conversion runs locally in your own browser.</p>
+          <summary>What if my note has no blockquotes?</summary>
+          <p>Roamify Body passes the text through unchanged, collapsing any long runs of blank lines into a single one. A friendly status message tells you nothing was removed.</p>
+        </details>
+        <details>
+          <summary>Do I need to remove the surrounding text first?</summary>
+          <p>No. Paste a whole paragraph, page or note. Roamify Body keeps every word and only strips the indented blockquotes.</p>
+        </details>
+        <details>
+          <summary>Is Roamify Body really free?</summary>
+          <p>Yes. Roamify Body is 100% free, with no sign-up, no account and no usage limits. Every conversion runs locally in your own browser.</p>
         </details>
         <details>
           <summary>Where does my data go?</summary>
-          <p>Nowhere. The conversion happens entirely in your browser tab. Nothing you paste is uploaded, stored or tracked.</p>
+          <p>Nowhere. The cleaning happens entirely in your browser tab. Nothing you paste is uploaded, stored or tracked.</p>
         </details>
       </div>
     </section>
   </main>
 
   <footer>
-    <span><b>Roamify Highlights</b> &copy; 2026 &mdash; free Markdown &amp; RoamResearch highlight converter.</span>
+    <span><b>Roamify Body</b> &copy; 2026 &mdash; free RoamResearch blockquote remover.</span>
     <span class="foot-links"><a href="index.html">Home</a> &middot; <a href="tables.html">Tables</a> &middot; <a href="highlights.html">Highlights</a> &middot; <a href="body.html">Body</a></span>
     <span>All conversions run locally in your browser. No data is uploaded.</span>
   </footer>
@@ -375,121 +425,145 @@ RoamResearch: This is a ^^highlighted^^ word.</pre>
 
   /* ================= Conversion engine ================= */
 
-  /** Markdown ==text== highlight -> RoamResearch ^^text^^ */
-  function mdToRoamHighlight(text) {
-    return String(text).replace(/==([^=\n]+)==/g, '^^$1^^');
+  /**
+   * Remove every blockquote line from a note copied out of RoamResearch.
+   * Works for Bullet, Document and Numbered copy modes.
+   *
+   * Rule: a line is part of a quote block if its trimmed form either
+   * starts with '>', or is a bulleted quote ('- > ...'). That covers:
+   *   - > citation            (bare quote)
+   *   -     - > citation      (indented quote under a paragraph)
+   *   -       > continuation  (multi-line quote continuations)
+   * Everything else (body text, bullets, numbers) is kept untouched.
+   * Runs of blank lines are collapsed to a single one.
+   */
+  function isQuoteLine(line) {
+    var t = line.trim();
+    return t.charAt(0) === '>' || /^-\s*>/.test(t);
   }
 
-  /** RoamResearch ^^text^^ highlight -> Markdown ==text== */
-  function roamToMdHighlight(text) {
-    return String(text).replace(/\^\^([^\\^\n]+)\^\^/g, '==$1==');
+  function stripQuotes(text) {
+    var lines = String(text).split('\n');
+    var out = [];
+    var i;
+    for (i = 0; i < lines.length; i++) {
+      var line = lines[i].replace(/\t/g, '    ');
+      if (isQuoteLine(line)) continue; /* quote block line */
+      out.push(line);
+    }
+
+    /* Collapse runs of blank lines and trim leading/trailing blanks. */
+    var result = [];
+    var blank = false;
+    for (i = 0; i < out.length; i++) {
+      if (out[i].trim() === '') {
+        if (blank) continue;        /* skip extra blank lines */
+        blank = true;
+        result.push('');
+      } else {
+        blank = false;
+        result.push(out[i]);
+      }
+    }
+    while (result.length && result[0].trim() === '') result.shift();
+    while (result.length && result[result.length - 1].trim() === '') result.pop();
+    return result.join('\n');
   }
 
-  /** Count converted markers in an output string */
-  function countMarkers(text, format) {
-    if (format === 'roam') return (String(text).match(/\^\^([^\\^\n]+)\^\^/g) || []).length;
-    return (String(text).match(/==([^=\n]+)==/g) || []).length;
+  /** Count the blockquote lines that stripQuotes would remove. */
+  function countQuotes(text) {
+    var lines = String(text).split('\n');
+    var n = 0;
+    for (var i = 0; i < lines.length; i++) {
+      if (isQuoteLine(lines[i])) n++;
+    }
+    return n;
+  }
+
+  /** Detect which Roam copy mode the note came from. */
+  function detectMode(text) {
+    var lines = String(text).split('\n');
+    var hasBullet = false, hasNumber = false, hasDoc = false;
+    for (var i = 0; i < lines.length; i++) {
+      var t = lines[i].trim();
+      if (!t || t.charAt(0) === '>' || /^-\s*>/.test(t)) continue; /* blanks & quotes ignored */
+      if (/^-\s/.test(t)) hasBullet = true;
+      else if (/^\d+\.\s/.test(t)) hasNumber = true;
+      else hasDoc = true;
+    }
+    if (hasBullet) return 'Bullet';
+    if (hasNumber) return 'Number';
+    return hasDoc ? 'Document' : 'Unknown';
+  }
+
+  /** Strip the leading '- ' bullet or 'N. ' number from top-level body
+   *  lines only. Nested child bullets keep their indentation and marker,
+   *  so the note's list structure is preserved. Used when the
+   *  "Keep bullets & numbers" option is unchecked. */
+  function stripPrefixes(text) {
+    return String(text).split('\n').map(function (line) {
+      return line.replace(/^(?:-\s|\d+\.\s)/, '');
+    }).join('\n');
   }
 
   /* ================= Samples ================= */
 
   var SAMPLES = {
-    md: 'Roamify Highlights converts ==highlighted== words between Markdown and RoamResearch.\n\nPaste a whole note — every ==highlight== is converted, ==one by one==, and everything else is kept exactly as it is.',
-    roam: 'Roamify Highlights converts ^^highlighted^^ words between RoamResearch and Markdown.\n\nPaste a whole note — every ^^highlight^^ is converted, ^^one by one^^, and everything else is kept exactly as it is.'
+    bullet: '- Body paragraph 1\n    - > Supporting citation for paragraph 1\n- Body paragraph 2\n    - > #Phase 1 Target customers, requirements\n- Body paragraph 3\n    - > Single-line citation\n    - > Multi-line citation: first line\n      > Multi-line citation: second line',
+    document: 'Body paragraph 1\n    - > Supporting citation for paragraph 1\n\nBody paragraph 2\n    - > Single-line citation\n    - > Multi-line citation: first line\n      > Multi-line citation: second line\n\nBody paragraph 3',
+    number: '6. Body paragraph 1\n    - > Supporting citation for paragraph 1\n7. Body paragraph 2\n    - > Single-line citation\n8. Body paragraph 3\n    - > Multi-line citation: first line\n      > Multi-line citation: second line'
   };
 
-  var LABELS = { md: 'Markdown', roam: 'RoamResearch' };
-  var ICONS = { md: 'fa-table', roam: 'fa-highlighter' };
-
-  /* Placeholder text for the input/output boxes, per conversion direction.
-     Updated by updateDir() so the hint always matches what the user should
-     paste / what will appear after a Swap. */
-  var PLACEHOLDERS = {
-    md2roam: {
-      in: 'Paste your note here, e.g.\nThis is a ==highlighted== word.',
-      out: 'Converted RoamResearch ^^highlight^^ text will appear here'
-    },
-    roam2md: {
-      in: 'Paste your RoamResearch code here.',
-      out: 'Converted Markdown ==highlight== text will appear here'
-    }
-  };
-
-  var CONVERTERS = {
-    md2roam: mdToRoamHighlight,
-    roam2md: roamToMdHighlight
-  };
+  var SAMPLE_NAMES = { bullet: 'Bullet', document: 'Document', number: 'Numbered' };
+  var sampleOrder = ['bullet', 'document', 'number'];
+  var sampleIdx = 0;
 
   /* ================= UI wiring ================= */
 
-  var state = { mode: 'md2roam' };
-
   function $(id) { return document.getElementById(id); }
 
-  function setPill(el, name) {
-    el.textContent = '';
-    var ic = document.createElement('i');
-    ic.className = 'fa-solid ' + ICONS[name];
-    el.appendChild(ic);
-    el.appendChild(document.createTextNode(' ' + LABELS[name]));
-  }
-
-  function updateDir() {
-    var fromName = state.mode === 'md2roam' ? 'md' : 'roam';
-    var toName = state.mode === 'md2roam' ? 'roam' : 'md';
-    setPill($('hl-from'), fromName);
-    setPill($('hl-to'), toName);
-    var ph = PLACEHOLDERS[state.mode];
-    $('in-hl').placeholder = ph.in;
-    $('out-hl').placeholder = ph.out;
-  }
-
   function setStatus(msg, kind) {
-    var st = $('status-hl');
+    var st = $('status-body');
     st.textContent = msg;
     st.className = 'status' + (kind ? ' ' + kind : '');
   }
 
   function doConvert() {
-    var inEl = $('in-hl');
-    var outEl = $('out-hl');
-    var out = CONVERTERS[state.mode](inEl.value);
+    var inEl = $('in-body');
+    var outEl = $('out-body');
+    var src = inEl.value;
+    var keepMarkers = $('keep-markers-body').checked;
+    var out = stripQuotes(src);
+    if (!keepMarkers) out = stripPrefixes(out);
     outEl.value = out;
-    var target = state.mode.split('2')[1];
-    var n = countMarkers(out, target);
-    setStatus(n ? 'Done — ' + n + ' highlight' + (n === 1 ? '' : 's') + ' converted'
-                : 'Done — no highlights found. Text copied unchanged.', n ? 'ok' : '');
+    var n = countQuotes(src);
+    var mode = detectMode(src);
+    var prefixNote = keepMarkers ? '' : ' (bullets & numbers removed)';
+    if (n) {
+      setStatus('Done — ' + n + ' blockquote line' + (n === 1 ? '' : 's') + ' removed' +
+                (mode !== 'Unknown' ? ' (' + mode + ' mode detected)' : '') + prefixNote, 'ok');
+    } else {
+      setStatus('Done — no blockquotes found. Text copied unchanged.' +
+                (mode !== 'Unknown' ? ' (' + mode + ' mode detected)' : '') + prefixNote, '');
+    }
   }
 
-  function swap() {
-    var inEl = $('in-hl');
-    var outEl = $('out-hl');
-    var tmp = inEl.value;
-    inEl.value = outEl.value;
-    outEl.value = tmp;
-    state.mode = state.mode === 'md2roam' ? 'roam2md' : 'md2roam';
-    updateDir();
-    setStatus('', '');
+  function loadNextSample() {
+    var key = sampleOrder[sampleIdx % sampleOrder.length];
+    sampleIdx++;
+    $('in-body').value = SAMPLES[key];
+    setStatus('Sample loaded (' + SAMPLE_NAMES[key] + ' mode). Press Strip Quotes to try it.', '');
   }
 
   function clearAll() {
-    $('in-hl').value = '';
-    $('out-hl').value = '';
+    $('in-body').value = '';
+    $('out-body').value = '';
     setStatus('', '');
-    $('in-hl').focus();
-  }
-
-  function sampleFor(mode) {
-    return mode === 'md2roam' ? SAMPLES.md : SAMPLES.roam;
-  }
-
-  function loadSample() {
-    $('in-hl').value = sampleFor(state.mode);
-    setStatus('Sample loaded. Press Convert to try it.', '');
+    $('in-body').focus();
   }
 
   function pasteInto() {
-    var inEl = $('in-hl');
+    var inEl = $('in-body');
     if (!navigator.clipboard || !navigator.clipboard.readText) {
       setStatus('Clipboard not available — press Cmd/Ctrl+V to paste manually.', 'warn');
       return;
@@ -503,10 +577,10 @@ RoamResearch: This is a ^^highlighted^^ word.</pre>
   }
 
   function copyOut() {
-    var outEl = $('out-hl');
+    var outEl = $('out-body');
     var v = outEl.value;
     if (!v) {
-      setStatus('Nothing to copy yet — convert something first.', 'warn');
+      setStatus('Nothing to copy yet — strip quotes first.', 'warn');
       return;
     }
     if (!navigator.clipboard || !navigator.clipboard.writeText) {
@@ -525,28 +599,26 @@ RoamResearch: This is a ^^highlighted^^ word.</pre>
   }
 
   /* Bind events */
-  $('convert-hl').addEventListener('click', doConvert);
-  $('swap-hl').addEventListener('click', swap);
-  $('clear-hl').addEventListener('click', clearAll);
-  $('sample-hl').addEventListener('click', loadSample);
-  $('paste-hl').addEventListener('click', pasteInto);
-  $('copy-hl').addEventListener('click', copyOut);
+  $('convert-body').addEventListener('click', doConvert);
+  $('sample-body').addEventListener('click', loadNextSample);
+  $('clear-body').addEventListener('click', clearAll);
+  $('paste-body').addEventListener('click', pasteInto);
+  $('copy-body').addEventListener('click', copyOut);
 
   /* Cmd/Ctrl + Enter to convert from the input textarea */
   document.addEventListener('keydown', function (e) {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
       var active = document.activeElement;
-      if (active && active.id === 'in-hl') { e.preventDefault(); doConvert(); }
+      if (active && active.id === 'in-body') { e.preventDefault(); doConvert(); }
     }
   });
 
-  /* Init pills */
-  updateDir();
-
   /* Expose engine for tests */
-  window.RoamifyHighlights = {
-    mdToRoamHighlight: mdToRoamHighlight,
-    roamToMdHighlight: roamToMdHighlight
+  window.RoamifyBody = {
+    stripQuotes: stripQuotes,
+    countQuotes: countQuotes,
+    detectMode: detectMode,
+    stripPrefixes: stripPrefixes
   };
 })();
 </script>

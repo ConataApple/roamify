@@ -6,14 +6,16 @@ Free online tools for RoamResearch users. Convert tables and highlights between 
 
 - **Roamify Tables** (`tables.html`) — HTML & Markdown table code ↔ RoamResearch `{{[[table]]}}` lists. Handles all 4 Roam copy formats.
 - **Roamify Highlights** (`highlights.html`) — Markdown `==highlight==` ↔ RoamResearch `^^highlight^^`. Paste whole notes, keep every word.
+- **Roamify Body** (`body.html`) — Strip indented `> ` blockquotes from notes copied out of RoamResearch, keeping only the body text. Works in Bullet, Document and Numbered modes.
 
-The homepage (`index.html`) introduces the site and links to both tools.
+The homepage (`index.html`) introduces the site and links to all tools.
 
 ## Pages
 
 - `/` — homepage
 - `/tables.html` — Roamify Tables
 - `/highlights.html` — Roamify Highlights
+- `/body.html` — Roamify Body
 
 ## Features
 
@@ -27,7 +29,7 @@ https://roamify.douzong.top
 
 ## Version
 
-Current release: **v2.0.2**
+Current release: **v3.2.0**
 
 ## License
 

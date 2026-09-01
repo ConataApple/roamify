@@ -1,10 +1,11 @@
 /**
- * Test suite for the Roamify site (3 pages).
+ * Test suite for the Roamify site (4 pages).
  * Loads each real HTML page with jsdom (runScripts: 'dangerously'),
  * then asserts on the exposed engines and the DOM:
- *   - tables.html   -> window.RoamifyTables  (table converters)
+ *   - tables.html     -> window.RoamifyTables    (table converters)
  *   - highlights.html -> window.RoamifyHighlights (highlight converters)
- *   - index.html    -> homepage structure, nav, SEO
+ *   - body.html       -> window.RoamifyBody      (blockquote stripper)
+ *   - index.html      -> homepage structure, nav, SEO
  */
 const fs = require('fs');
 const path = require('path');
@@ -229,7 +230,81 @@ console.log('\n--- highlights.html UI smoke tests ---');
 }
 
 /* ================================================================
- * 3) index.html — homepage structure, nav, SEO
+ * 3) body.html — RoamifyBody engine
+ * ================================================================ */
+console.log('\n=== body.html: RoamifyBody engine ===');
+const domBody = loadPage('body.html');
+const B = domBody.window.RoamifyBody;
+if (!B) { console.error('FAIL: window.RoamifyBody was not exposed'); process.exit(1); }
+
+console.log('\n--- Bullet mode ---');
+const bulletSample = '- Body paragraph 1\n    - > Supporting citation for paragraph 1\n- Body paragraph 2\n    - > #Phase 1 Target customers, requirements\n- Body paragraph 3\n    - > Single-line citation\n    - > Multi-line citation: first line\n      > Multi-line citation: second line';
+const bClean = B.stripQuotes(bulletSample);
+assert(bClean === '- Body paragraph 1\n- Body paragraph 2\n- Body paragraph 3', 'bullet quotes removed, bullets kept', JSON.stringify(bClean));
+assert(bClean.indexOf('>') === -1, 'no > remains after bullet strip');
+assert(B.detectMode(bulletSample) === 'Bullet', 'detects Bullet mode');
+assert(B.countQuotes(bulletSample) === 5, 'countQuotes counts all 5 quote lines', String(B.countQuotes(bulletSample)));
+
+console.log('\n--- Document mode ---');
+const docSample = 'Body paragraph 1\n    - > Supporting citation for paragraph 1\n\nBody paragraph 2\n    - > Single-line citation\n    - > Multi-line citation: first line\n      > Multi-line citation: second line\n\n\nBody paragraph 3';
+const dClean = B.stripQuotes(docSample);
+assert(dClean === 'Body paragraph 1\n\nBody paragraph 2\n\nBody paragraph 3', 'document quotes removed, blank runs collapsed to one', JSON.stringify(dClean));
+assert(dClean.indexOf('>') === -1, 'no > remains after document strip');
+assert(B.detectMode(docSample) === 'Document', 'detects Document mode');
+
+console.log('\n--- Numbered mode ---');
+const numSample = '6. Body paragraph 1\n    - > Supporting citation for paragraph 1\n7. Body paragraph 2\n    - > Multi-line citation: first line\n      > Multi-line citation: second line\n8. Body paragraph 3';
+const nClean = B.stripQuotes(numSample);
+assert(nClean === '6. Body paragraph 1\n7. Body paragraph 2\n8. Body paragraph 3', 'numbered quotes removed, numbers kept', JSON.stringify(nClean));
+assert(nClean.indexOf('>') === -1, 'no > remains after numbered strip');
+assert(B.detectMode(numSample) === 'Number', 'detects Number mode');
+
+console.log('\n--- Edge cases ---');
+assert(B.stripQuotes('plain text with no quotes') === 'plain text with no quotes', 'no quotes -> unchanged');
+assert(B.stripQuotes('') === '', 'empty string -> empty');
+assert(B.stripQuotes('a\n\n\n\nb') === 'a\n\nb', 'blank runs collapsed to one');
+assert(B.stripQuotes('    > quote') === '', 'bare indented quote removed');
+assert(B.detectMode('no structure here') === 'Document', 'plain text detected as Document');
+assert(B.detectMode('') === 'Unknown', 'empty input detected as Unknown');
+
+console.log('\n--- stripPrefixes (Keep bullets & numbers off) ---');
+assert(B.stripPrefixes('- a\n    - nested\n6. b\nplain') === 'a\n    - nested\nb\nplain', 'strips only top-level markers, nested bullets kept', JSON.stringify(B.stripPrefixes('- a\n    - nested\n6. b\nplain')));
+assert(B.stripPrefixes('    - nested') === '    - nested', 'nested bullet fully preserved');
+assert(B.stripPrefixes('plain') === 'plain', 'plain lines untouched');
+assert(B.stripPrefixes('') === '', 'empty unchanged');
+assert(B.stripPrefixes('-1 not a bullet') === '-1 not a bullet', 'dash-number text untouched');
+assert(B.stripPrefixes('6.5 not a number') === '6.5 not a number', 'decimal text untouched');
+
+console.log('\n--- body.html UI smoke tests ---');
+{
+  const w = domBody.window;
+  const $ = (id) => w.document.getElementById(id);
+
+  $('sample-body').click();
+  assert($('in-body').value.indexOf('>') !== -1, 'Sample fills input with quotes');
+  $('convert-body').click();
+  assert($('out-body').value.indexOf('>') === -1, 'Convert strips all quotes', $('out-body').value);
+  assert($('status-body').textContent.indexOf('removed') !== -1, 'status reports removed count', $('status-body').textContent);
+
+  $('clear-body').click();
+  assert($('in-body').value === '' && $('out-body').value === '', 'Clear empties both boxes');
+
+  $('convert-body').click();
+  assert($('status-body').textContent.indexOf('no blockquotes') !== -1, 'Empty convert shows friendly hint', $('status-body').textContent);
+
+  /* "Keep bullets & numbers" option */
+  $('in-body').value = '- First\n    - Nested\n6. Second';
+  $('keep-markers-body').checked = false;
+  $('convert-body').click();
+  assert($('out-body').value === 'First\n    - Nested\nSecond', 'Unchecked option strips top-level markers, nested kept', JSON.stringify($('out-body').value));
+  assert($('status-body').textContent.indexOf('bullets & numbers removed') !== -1, 'status notes markers removed', $('status-body').textContent);
+  $('keep-markers-body').checked = true;
+  $('convert-body').click();
+  assert($('out-body').value === '- First\n    - Nested\n6. Second', 'Checked option keeps bullets & numbers', JSON.stringify($('out-body').value));
+}
+
+/* ================================================================
+ * 4) index.html — homepage structure, nav, SEO
  * ================================================================ */
 console.log('\n=== index.html: homepage ===');
 const domHome = loadPage('index.html');
@@ -245,21 +320,23 @@ assert(domHome.window.document.documentElement.innerHTML.indexOf('G-3C28SP2D8F')
 
 console.log('\n--- Navigation ---');
 const homeNav = homeW.document.querySelectorAll('.nav-links a');
-assert(homeNav.length === 3, 'nav has 3 links', String(homeNav.length));
+assert(homeNav.length === 4, 'nav has 4 links', String(homeNav.length));
 assert(homeW.document.querySelector('.nav-links a.active') !== null, 'Home link marked active');
 
 console.log('\n--- Tool cards ---');
 const cards = homeW.document.querySelectorAll('.tool-card');
-assert(cards.length === 2, 'two tool cards', String(cards.length));
+assert(cards.length === 3, 'three tool cards', String(cards.length));
 assert(cards[0].getAttribute('href') === 'tables.html', 'first card links to tables.html', cards[0].getAttribute('href'));
 assert(cards[1].getAttribute('href') === 'highlights.html', 'second card links to highlights.html', cards[1].getAttribute('href'));
+assert(cards[2].getAttribute('href') === 'body.html', 'third card links to body.html', cards[2].getAttribute('href'));
 assert(cards[0].textContent.indexOf('Tables') !== -1, 'first card mentions Tables');
 assert(cards[1].textContent.indexOf('Highlights') !== -1, 'second card mentions Highlights');
+assert(cards[2].textContent.indexOf('Body') !== -1, 'third card mentions Body');
 assert(homeW.document.querySelector('#about h2') !== null, 'What is Roamify section present');
 assert(homeW.document.querySelectorAll('#faq details').length >= 3, 'FAQ has 3+ questions');
 
 /* ================================================================
- * 4) Cross-page navigation
+ * 5) Cross-page navigation
  * ================================================================ */
 console.log('\n=== cross-page links ===');
 const linksOf = (file) => {
@@ -268,13 +345,20 @@ const linksOf = (file) => {
 };
 const tLinks = linksOf('tables.html');
 const hLinks = linksOf('highlights.html');
+const bLinks = linksOf('body.html');
 const iLinks = linksOf('index.html');
 assert(tLinks.indexOf('highlights.html') !== -1, 'tables.html links to highlights.html');
+assert(tLinks.indexOf('body.html') !== -1, 'tables.html links to body.html');
 assert(tLinks.indexOf('index.html') !== -1, 'tables.html links to homepage');
 assert(hLinks.indexOf('tables.html') !== -1, 'highlights.html links to tables.html');
+assert(hLinks.indexOf('body.html') !== -1, 'highlights.html links to body.html');
 assert(hLinks.indexOf('index.html') !== -1, 'highlights.html links to homepage');
+assert(bLinks.indexOf('tables.html') !== -1, 'body.html links to tables.html');
+assert(bLinks.indexOf('highlights.html') !== -1, 'body.html links to highlights.html');
+assert(bLinks.indexOf('index.html') !== -1, 'body.html links to homepage');
 assert(iLinks.indexOf('tables.html') !== -1, 'homepage links to tables.html');
 assert(iLinks.indexOf('highlights.html') !== -1, 'homepage links to highlights.html');
+assert(iLinks.indexOf('body.html') !== -1, 'homepage links to body.html');
 assert(tLinks.indexOf('index.html') !== -1 && tLinks.indexOf('highlights.html') !== -1, 'tables.html nav brand + Home present');
 
 console.log('\n====================================');

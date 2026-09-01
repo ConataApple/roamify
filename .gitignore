@@ -2,8 +2,12 @@
 HANDOVER.md
 需求文档 v1.0.0.md
 需求文档 Ver2.md
+需求文档 Ver3.md
 Google要求添加的代码说明.md
 RoamResearch的表格规则（修正版）.md
+
+# ===== 测试依赖（jsdom 等，未纳入版本管理） =====
+node_modules/
 
 # ===== macOS 系统文件 =====
 .DS_Store

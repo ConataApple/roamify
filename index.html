@@ -13,8 +13,8 @@
   gtag('config', 'G-3C28SP2D8F');
 </script>
 <title>Roamify — Free Tools for RoamResearch Users</title>
-<meta name="description" content="Roamify offers free online tools for RoamResearch users. Convert HTML &amp; Markdown tables into {{[[table]]}} format, and convert Markdown highlights into ^^highlight^^ format. No sign-up, nothing uploaded.">
-<meta name="keywords" content="roamify, roamresearch tools, roam research table converter, roam research highlight converter, html table to roam, markdown table to roam, markdown highlight to roam, roamresearch free tools, {{[[table]]}} converter">
+<meta name="description" content="Roamify offers free online tools for RoamResearch users. Convert tables into {{[[table]]}} format, swap highlight markers, and strip indented blockquotes to keep only your body text. No sign-up, nothing uploaded.">
+<meta name="keywords" content="roamify, roamresearch tools, roam research table converter, roam research highlight converter, html table to roam, markdown table to roam, markdown highlight to roam, roam blockquote remover, roam clean text, roam body text, roamresearch free tools, {{[[table]]}} converter">
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#87BCBF">
 <meta name="author" content="Roamify">
@@ -57,7 +57,15 @@
     "url": "https://roamify.douzong.top/tables.html",
     "applicationCategory": "UtilityApplication",
     "description": "Convert HTML & Markdown table code into RoamResearch {{[[table]]}} format, and back."
-  }
+  },
+  "mainEntity": [
+    {
+      "@type": "WebPage",
+      "name": "Roamify Body",
+      "url": "https://roamify.douzong.top/body.html",
+      "description": "Remove indented > blockquotes from RoamResearch notes copied in Bullet, Document or Number mode, keeping only the body text."
+    }
+  ]
 }
 </script>
 <style>
@@ -121,28 +129,28 @@
   .tagline b { color: var(--orange); }
 
   /* ---------- Tool cards ---------- */
-  .tools { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; margin-top: 46px; }
+  .tools { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 42px; }
   .tool-card {
-    display: flex; flex-direction: column; gap: 16px;
-    border: 3px solid var(--ink); border-radius: 18px; background: #fff;
-    box-shadow: 8px 8px 0 rgba(27, 28, 32, .9);
-    padding: 30px; text-decoration: none; color: var(--ink);
+    display: flex; flex-direction: column; gap: 12px;
+    border: 3px solid var(--ink); border-radius: 16px; background: #fff;
+    box-shadow: 6px 6px 0 rgba(27, 28, 32, .9);
+    padding: 22px; text-decoration: none; color: var(--ink);
     transition: transform .08s, box-shadow .08s;
   }
-  .tool-card:hover { transform: translate(-3px, -3px); box-shadow: 11px 11px 0 rgba(27, 28, 32, .9); }
-  .tool-card:active { transform: translate(2px, 2px); box-shadow: 3px 3px 0 rgba(27, 28, 32, .9); }
+  .tool-card:hover { transform: translate(-3px, -3px); box-shadow: 9px 9px 0 rgba(27, 28, 32, .9); }
+  .tool-card:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 rgba(27, 28, 32, .9); }
   .tool-icon {
     display: inline-flex; align-items: center; justify-content: center;
-    width: 58px; height: 58px; border: 3px solid var(--ink); border-radius: 16px;
-    background: var(--teal); box-shadow: 4px 4px 0 var(--ink); font-size: 24px; color: var(--ink);
+    width: 44px; height: 44px; border: 3px solid var(--ink); border-radius: 12px;
+    background: var(--teal); box-shadow: 3px 3px 0 var(--ink); font-size: 18px; color: var(--ink);
   }
-  .tool-card h2 { font-size: 25px; letter-spacing: -0.01em; }
-  .tool-card p { color: var(--navy); font-size: 15.5px; flex: 1; }
+  .tool-card h2 { font-size: 19px; letter-spacing: -0.01em; }
+  .tool-card p { color: var(--navy); font-size: 14px; flex: 1; }
   .tool-card .go {
-    align-self: flex-start; margin-top: 6px;
+    align-self: flex-start;
     border: 3px solid var(--ink); border-radius: 12px; background: #fff;
     font-family: inherit; font-weight: 700; cursor: pointer;
-    padding: 11px 20px; font-size: 15px; display: inline-flex; align-items: center; gap: 9px;
+    padding: 10px 18px; font-size: 14px; display: inline-flex; align-items: center; gap: 9px;
     box-shadow: 4px 4px 0 var(--ink); color: var(--ink);
     transition: transform .06s, box-shadow .06s;
   }
@@ -188,7 +196,7 @@
   }
   @media (max-width: 560px) {
     body { padding: 26px 14px 44px; }
-    .tool-card { padding: 22px; border-radius: 14px; }
+    .tool-card { padding: 20px; border-radius: 14px; }
     .tool-card .go { width: 100%; justify-content: center; }
   }
 </style>
@@ -202,6 +210,7 @@
       <a href="index.html" class="active" aria-current="page"><i class="fa-solid fa-house"></i> Home</a>
       <a href="tables.html"><i class="fa-solid fa-table"></i> Tables</a>
       <a href="highlights.html"><i class="fa-solid fa-highlighter"></i> Highlights</a>
+      <a href="body.html"><i class="fa-solid fa-scissors"></i> Body</a>
     </div>
   </nav>
 
@@ -210,7 +219,7 @@
       <h1>Roamify</h1>
       <span class="badge">100% Free</span>
     </div>
-    <p class="tagline">Free tools built for <b>RoamResearch</b> users. Convert tables and highlights between RoamResearch, HTML and Markdown — paste, convert, copy. Nothing leaves your browser.</p>
+    <p class="tagline">Free tools built for <b>RoamResearch</b> users. Convert tables, swap highlight markers, and strip indented blockquotes to keep only your body text — paste, convert, copy. Nothing leaves your browser.</p>
   </header>
 
   <main>
@@ -219,14 +228,20 @@
       <a class="tool-card" href="tables.html">
         <div class="tool-icon"><i class="fa-solid fa-table"></i></div>
         <h2>Roamify Tables</h2>
-        <p>Convert HTML &amp; Markdown table code into RoamResearch <code>{{[[table]]}}</code> format — and back again. Handles all of Roam's copy formats.</p>
-        <span class="go primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Open Tables</span>
+        <p>HTML &amp; Markdown tables &harr; <code>{{[[table]]}}</code>.</p>
+        <span class="go primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Open</span>
       </a>
       <a class="tool-card" href="highlights.html">
         <div class="tool-icon"><i class="fa-solid fa-highlighter"></i></div>
         <h2>Roamify Highlights</h2>
-        <p>Convert Markdown <code>==highlight==</code> markers into RoamResearch <code>^^highlight^^</code> format — and back again. Paste whole notes, keep every word.</p>
-        <span class="go primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Open Highlights</span>
+        <p>Markdown <code>==highlight==</code> &harr; RoamResearch <code>^^highlight^^</code>.</p>
+        <span class="go primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Open</span>
+      </a>
+      <a class="tool-card" href="body.html">
+        <div class="tool-icon"><i class="fa-solid fa-scissors"></i></div>
+        <h2>Roamify Body</h2>
+        <p>Strip indented <code>&gt;</code> blockquotes, keep only your body text.</p>
+        <span class="go primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Open</span>
       </a>
     </section>
 
@@ -235,10 +250,11 @@
       <h2>What is Roamify?</h2>
       <p>Roamify is a collection of small, free, browser-based tools for RoamResearch users. Every tool solves one boring, repetitive task — moving your notes between RoamResearch and the rest of your writing stack.</p>
       <div class="about-card">
-        <p>RoamResearch stores data in its own way: tables are indented lists that start with <code>{{[[table]]}}</code>, and highlights use <code>^^double carets^^</code> instead of Markdown's <code>==equals==</code>. Rewriting that by hand is tedious — Roamify does it in one click.</p>
+        <p>RoamResearch stores data in its own way: tables are indented lists that start with <code>{{[[table]]}}</code>, highlights use <code>^^double carets^^</code> instead of Markdown's <code>==equals==</code>, and supporting citations hang as indented <code>&gt;</code> blockquotes under your paragraphs. Rewriting that by hand is tedious — Roamify does it in one click.</p>
         <ul>
           <li><b>Roamify Tables</b> — HTML &amp; Markdown table code &harr; RoamResearch <code>{{[[table]]}}</code> lists</li>
           <li><b>Roamify Highlights</b> — Markdown <code>==highlight==</code> &harr; RoamResearch <code>^^highlight^^</code></li>
+          <li><b>Roamify Body</b> — strips indented <code>&gt;</code> blockquotes from notes copied in Bullet, Document or Number mode</li>
         </ul>
       </div>
     </section>
@@ -257,7 +273,7 @@
         </details>
         <details>
           <summary>What tools does Roamify offer?</summary>
-          <p>Two converters for RoamResearch users: Roamify Tables (HTML &amp; Markdown tables &harr; RoamResearch <code>{{[[table]]}}</code> lists) and Roamify Highlights (Markdown <code>==highlights==</code> &harr; RoamResearch <code>^^highlights^^</code>).</p>
+          <p>Three converters for RoamResearch users: Roamify Tables (HTML &amp; Markdown tables &harr; RoamResearch <code>{{[[table]]}}</code> lists), Roamify Highlights (Markdown <code>==highlights==</code> &harr; RoamResearch <code>^^highlights^^</code>) and Roamify Body (strips indented <code>&gt;</code> blockquotes to keep only your note's body text).</p>
         </details>
         <details>
           <summary>Do I need to install anything?</summary>
@@ -269,7 +285,7 @@
 
   <footer>
     <span><b>Roamify</b> &copy; 2026 &mdash; free tools for RoamResearch users.</span>
-    <span class="foot-links"><a href="index.html">Home</a> &middot; <a href="tables.html">Tables</a> &middot; <a href="highlights.html">Highlights</a></span>
+    <span class="foot-links"><a href="index.html">Home</a> &middot; <a href="tables.html">Tables</a> &middot; <a href="highlights.html">Highlights</a> &middot; <a href="body.html">Body</a></span>
     <span>All conversions run locally in your browser. No data is uploaded.</span>
   </footer>
 </div>
