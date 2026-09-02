@@ -145,7 +145,7 @@
   .dir-arrow { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; color: var(--ink); font-size: 17px; }
 
   /* Output options */
-  .opts { display: flex; justify-content: center; margin-bottom: 26px; }
+  .opts { display: flex; justify-content: center; gap: 22px; flex-wrap: wrap; margin-bottom: 26px; }
   .opt {
     display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
     font-weight: 700; font-size: 14px; color: var(--navy);
@@ -286,6 +286,10 @@
           <input type="checkbox" id="keep-markers-body" checked>
           Keep bullets &amp; numbers
         </label>
+        <label class="opt" for="keep-top-quotes-body" title="When checked, lines that start with > at the very beginning (no indent) are kept as-is. Indented quotes are still removed. Leave unchecked (default) to strip them too.">
+          <input type="checkbox" id="keep-top-quotes-body">
+          Keep top-level &gt; lines
+        </label>
       </div>
 
       <div class="editors">
@@ -334,7 +338,7 @@
         <div class="step">
           <span class="num">2</span>
           <h3>Strip the quotes</h3>
-          <p>Click the orange Convert button. Every indented <code>&gt;</code> blockquote is removed. Keep <em>Keep bullets &amp; numbers</em> checked to preserve all list markers, or uncheck it to strip only the top-level ones.</p>
+          <p>Click the orange Convert button. Every indented <code>&gt;</code> blockquote is removed. Keep <em>Keep bullets &amp; numbers</em> checked to preserve all list markers, or uncheck it to strip only the top-level ones. Check <em>Keep top-level &gt; lines</em> to keep lines that start with <code>&gt;</code> at the very beginning, instead of stripping them too.</p>
         </div>
         <div class="step">
           <span class="num">3</span>
@@ -385,6 +389,10 @@ Body paragraph 2
           <p>Any line that starts with <code>&gt;</code> — the indented blockquotes RoamResearch users add under a paragraph as supporting citations — including their multi-line continuations. Everything else is kept.</p>
         </details>
         <details>
+          <summary>What about a <code>&gt;</code> line at the very beginning, with no indent?</summary>
+          <p>By default Roamify Body strips it too, like any other blockquote. If you check <em>Keep top-level &gt; lines</em>, lines that start with <code>&gt;</code> at the very beginning of the line (no indent) are kept exactly as they are — only the indented blockquotes are removed.</p>
+        </details>
+        <details>
           <summary>Which RoamResearch copy modes are supported?</summary>
           <p>All three. Bullet mode (<code>- text</code>), Document mode (plain text) and Numbered mode (<code>6. text</code>) are all detected automatically — you don't need to tell Roamify Body which one you used.</p>
         </details>
@@ -429,26 +437,35 @@ Body paragraph 2
    * Remove every blockquote line from a note copied out of RoamResearch.
    * Works for Bullet, Document and Numbered copy modes.
    *
-   * Rule: a line is part of a quote block if its trimmed form either
-   * starts with '>', or is a bulleted quote ('- > ...'). That covers:
+   * Rule: a line is part of a quote block if its trimmed form starts with
+   * '>', or is a bulleted quote ('- > ...'), or is a numbered quote
+   * ('6. > ...' — Number mode writes flush-left quotes with a number
+   * prefix). That covers:
    *   - > citation            (bare quote)
    *   -     - > citation      (indented quote under a paragraph)
    *   -       > continuation  (multi-line quote continuations)
+   *   - 7. > citation         (top-level numbered quote, Number mode)
    * Everything else (body text, bullets, numbers) is kept untouched.
    * Runs of blank lines are collapsed to a single one.
    */
-  function isQuoteLine(line) {
+  function isQuoteLine(line, keepTopQuotes) {
     var t = line.trim();
-    return t.charAt(0) === '>' || /^-\s*>/.test(t);
+    if (t.charAt(0) !== '>' && !/^-\s*>/.test(t) && !/^\d+\.\s*>/.test(t)) return false;
+    /* "Keep top-level > lines" checked: flush-left quote lines (no leading
+       spaces/tabs) are kept as body text; only indented quotes are quotes. */
+    if (keepTopQuotes && line.charAt(0) !== ' ' && line.charAt(0) !== '\t') {
+      return false;
+    }
+    return true;
   }
 
-  function stripQuotes(text) {
+  function stripQuotes(text, keepTopQuotes) {
     var lines = String(text).split('\n');
     var out = [];
     var i;
     for (i = 0; i < lines.length; i++) {
       var line = lines[i].replace(/\t/g, '    ');
-      if (isQuoteLine(line)) continue; /* quote block line */
+      if (isQuoteLine(line, keepTopQuotes)) continue; /* quote block line */
       out.push(line);
     }
 
@@ -471,22 +488,22 @@ Body paragraph 2
   }
 
   /** Count the blockquote lines that stripQuotes would remove. */
-  function countQuotes(text) {
+  function countQuotes(text, keepTopQuotes) {
     var lines = String(text).split('\n');
     var n = 0;
     for (var i = 0; i < lines.length; i++) {
-      if (isQuoteLine(lines[i])) n++;
+      if (isQuoteLine(lines[i], keepTopQuotes)) n++;
     }
     return n;
   }
 
   /** Detect which Roam copy mode the note came from. */
-  function detectMode(text) {
+  function detectMode(text, keepTopQuotes) {
     var lines = String(text).split('\n');
     var hasBullet = false, hasNumber = false, hasDoc = false;
     for (var i = 0; i < lines.length; i++) {
       var t = lines[i].trim();
-      if (!t || t.charAt(0) === '>' || /^-\s*>/.test(t)) continue; /* blanks & quotes ignored */
+      if (!t || isQuoteLine(lines[i], keepTopQuotes)) continue; /* blanks & quotes ignored */
       if (/^-\s/.test(t)) hasBullet = true;
       else if (/^\d+\.\s/.test(t)) hasNumber = true;
       else hasDoc = true;
@@ -533,18 +550,20 @@ Body paragraph 2
     var outEl = $('out-body');
     var src = inEl.value;
     var keepMarkers = $('keep-markers-body').checked;
-    var out = stripQuotes(src);
+    var keepTopQuotes = $('keep-top-quotes-body').checked;
+    var out = stripQuotes(src, keepTopQuotes);
     if (!keepMarkers) out = stripPrefixes(out);
     outEl.value = out;
-    var n = countQuotes(src);
-    var mode = detectMode(src);
+    var n = countQuotes(src, keepTopQuotes);
+    var mode = detectMode(src, keepTopQuotes);
     var prefixNote = keepMarkers ? '' : ' (bullets & numbers removed)';
+    var topNote = keepTopQuotes ? ' (top-level > lines kept)' : '';
     if (n) {
       setStatus('Done — ' + n + ' blockquote line' + (n === 1 ? '' : 's') + ' removed' +
-                (mode !== 'Unknown' ? ' (' + mode + ' mode detected)' : '') + prefixNote, 'ok');
+                (mode !== 'Unknown' ? ' (' + mode + ' mode detected)' : '') + prefixNote + topNote, 'ok');
     } else {
       setStatus('Done — no blockquotes found. Text copied unchanged.' +
-                (mode !== 'Unknown' ? ' (' + mode + ' mode detected)' : '') + prefixNote, '');
+                (mode !== 'Unknown' ? ' (' + mode + ' mode detected)' : '') + prefixNote + topNote, '');
     }
   }
 

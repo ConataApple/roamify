@@ -267,6 +267,27 @@ assert(B.stripQuotes('    > quote') === '', 'bare indented quote removed');
 assert(B.detectMode('no structure here') === 'Document', 'plain text detected as Document');
 assert(B.detectMode('') === 'Unknown', 'empty input detected as Unknown');
 
+console.log('\n--- keepTopQuotes (Keep top-level > lines) ---');
+assert(B.stripQuotes('> top-level quote\n    - > indented quote') === '', 'default: top-level > line removed too');
+assert(B.stripQuotes('- > top bullet quote\n    - > indented quote') === '', 'default: top-level - > line removed too');
+assert(B.stripQuotes('> top-level quote\n    - > indented quote\nbody', true) === '> top-level quote\nbody', 'keepTopQuotes: flush > line kept, indented removed', JSON.stringify(B.stripQuotes('> top-level quote\n    - > indented quote\nbody', true)));
+assert(B.stripQuotes('- > top bullet quote\n    - > indented quote\nbody', true) === '- > top bullet quote\nbody', 'keepTopQuotes: flush - > line kept, indented removed', JSON.stringify(B.stripQuotes('- > top bullet quote\n    - > indented quote\nbody', true)));
+assert(B.stripQuotes('    - > indented\n      > cont\n> top', true) === '> top', 'keepTopQuotes: multi-line indented quote still fully removed', JSON.stringify(B.stripQuotes('    - > indented\n      > cont\n> top', true)));
+assert(B.countQuotes('> a\n    - > b') === 2, 'countQuotes default counts all quotes', String(B.countQuotes('> a\n    - > b')));
+assert(B.countQuotes('> a\n    - > b', true) === 1, 'countQuotes keepTopQuotes counts only indented', String(B.countQuotes('> a\n    - > b', true)));
+assert(B.detectMode('> a') === 'Unknown', 'detectMode default ignores top-level > lines');
+assert(B.detectMode('> a', true) === 'Document', 'detectMode keepTopQuotes treats kept > line as body text');
+
+console.log('\n--- numbered top-level quotes (Number mode) ---');
+const numTop = '6. Body paragraph 1\n7. > Top-level numbered quote\n8. Body paragraph 2\n    - > Indented quote';
+assert(B.stripQuotes(numTop) === '6. Body paragraph 1\n8. Body paragraph 2', 'numbered top-level quote removed by default', JSON.stringify(B.stripQuotes(numTop)));
+assert(B.stripQuotes(numTop, true) === '6. Body paragraph 1\n7. > Top-level numbered quote\n8. Body paragraph 2', 'numbered top-level quote kept when option on', JSON.stringify(B.stripQuotes(numTop, true)));
+assert(B.stripQuotes('6. > Quote only') === '', 'numbered quote alone removed', JSON.stringify(B.stripQuotes('6. > Quote only')));
+assert(B.countQuotes('6. > a\n    - > b') === 2, 'countQuotes counts numbered quote', String(B.countQuotes('6. > a\n    - > b')));
+assert(B.detectMode('6. > a') === 'Unknown', 'detectMode default ignores numbered quote');
+assert(B.detectMode('6. > a', true) === 'Number', 'detectMode keepTopQuotes treats kept numbered quote as number line');
+assert(B.stripPrefixes(B.stripQuotes('6. Body\n7. > Quote', true)) === 'Body\n> Quote', 'keepTopQuotes + stripPrefixes keeps quote content, strips number', JSON.stringify(B.stripPrefixes(B.stripQuotes('6. Body\n7. > Quote', true))));
+
 console.log('\n--- stripPrefixes (Keep bullets & numbers off) ---');
 assert(B.stripPrefixes('- a\n    - nested\n6. b\nplain') === 'a\n    - nested\nb\nplain', 'strips only top-level markers, nested bullets kept', JSON.stringify(B.stripPrefixes('- a\n    - nested\n6. b\nplain')));
 assert(B.stripPrefixes('    - nested') === '    - nested', 'nested bullet fully preserved');
@@ -301,6 +322,15 @@ console.log('\n--- body.html UI smoke tests ---');
   $('keep-markers-body').checked = true;
   $('convert-body').click();
   assert($('out-body').value === '- First\n    - Nested\n6. Second', 'Checked option keeps bullets & numbers', JSON.stringify($('out-body').value));
+
+  /* "Keep top-level > lines" option */
+  $('in-body').value = '> Top line\n    - > Quote\nBody';
+  $('keep-top-quotes-body').checked = true;
+  $('convert-body').click();
+  assert($('out-body').value === '> Top line\nBody', 'Checked option keeps top-level > line, removes indented quote', JSON.stringify($('out-body').value));
+  $('keep-top-quotes-body').checked = false;
+  $('convert-body').click();
+  assert($('out-body').value === 'Body', 'Unchecked option strips top-level > line too', JSON.stringify($('out-body').value));
 }
 
 /* ================================================================
